@@ -31,5 +31,14 @@
       "js": ["content-script.js"],
       "run_at": "document_idle"
     }
-  ]
+  ],
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "crypt3tr@invalid",
+      "data_collection_permissions": {
+        "collects_data": false,
+        "required": ["none"]
+      }
+    }
+  }
 }
