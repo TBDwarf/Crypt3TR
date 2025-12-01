@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crypt3TR</title>
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      padding: 10px;
+      margin: 0;
+      background: #181a1f;
+      color: #f5f5f5;
+      width: 280px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
+    }
+    h1 {
+      font-size: 16px;
+      margin: 0;
+    }
+    .logo {
+      width: 24px;
+      height: 24px;
+      border-radius: 4px;
+    }
+    .section {
+      margin-bottom: 10px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #333;
+    }
+    label {
+      font-size: 12px;
+      display: block;
+      margin-bottom: 4px;
+    }
+    input[type="password"],
+    textarea {
+      width: 100%;
+      box-sizing: border-box;
+      padding: 6px;
+      border-radius: 4px;
+      border: 1px solid #444;
+      background: #101116;
+      color: #f5f5f5;
+      font-size: 12px;
+      resize: vertical;
+    }
+    textarea {
+      min-height: 60px;
+    }
+    .row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .toggle {
+      display: inline-flex;
+      align-items: center;
+      cursor: pointer;
+      font-size: 12px;
+      user-select: none;
+    }
+    .toggle input {
+      margin-right: 6px;
+    }
+    button {
+      padding: 5px 10px;
+      font-size: 12px;
+      border-radius: 4px;
+      border: none;
+      cursor: pointer;
+      background: #3b82f6;
+      color: #fff;
+    }
+    button.secondary {
+      background: #4b5563;
+      margin-left: 6px;
+    }
+    small {
+      font-size: 11px;
+      color: #9ca3af;
+    }
+    .status {
+      font-size: 12px;
+      margin-top: 4px;
+    }
+    .status.on {
+      color: #22c55e;
+    }
+    .status.off {
+      color: #f97373;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1 id="title">Crypt3TR</h1>
+    <img src="icon-32.png" alt="Crypt3TR" class="logo">
+  </div>
+
+  <div class="section">
+    <div class="row">
+      <label class="toggle">
+        <input type="checkbox" id="enabled">
+        <span id="labelEnabled">Extension enabled</span>
+      </label>
+    </div>
+    <div id="statusText" class="status"></div>
+  </div>
+
+  <div class="section">
+    <label for="password" id="labelPassword">Encryption password</label>
+    <input type="password" id="password" placeholder="">
+    <div style="margin-top:6px;">
+      <button id="savePassword">Save</button>
+      <button id="clearPassword" class="secondary">Clear</button>
+    </div>
+    <small id="hintPassword"></small>
+  </div>
+
+  <div class="section">
+    <label for="whitelist" id="labelWhitelist">Domain whitelist (one per line)</label>
+    <textarea id="whitelist" placeholder=""></textarea>
+    <div style="margin-top:6px;">
+      <button id="saveWhitelist">Save domains</button>
+    </div>
+    <small id="hintWhitelist"></small>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>
