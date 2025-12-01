@@ -32,8 +32,8 @@ function createContextMenu() {
                 title: titles.encrypt,
                 contexts: ["editable"],
                 icons: {
-                    "16": "icon-encrypt-16.png",
-                    "32": "icon-encrypt-32.png"
+                    "16": "/icons/icon-encrypt-16.png",
+                    "32": "/icons/icon-encrypt-32.png"
                 }
             });
 
@@ -43,8 +43,8 @@ function createContextMenu() {
                 title: titles.decrypt,
                 contexts: ["editable"],
                 icons: {
-                    "16": "icon-decrypt-16.png",
-                    "32": "icon-decrypt-32.png"
+                    "16": "/icons/icon-decrypt-16.png",
+                    "32": "/icons/icon-decrypt-32.png"
                 }
             });
         });
@@ -55,8 +55,8 @@ function createContextMenu() {
                 title: titles.encrypt,
                 contexts: ["editable"],
                 icons: {
-                    "16": "icon-encrypt-16.png",
-                    "32": "icon-encrypt-32.png"
+                    "16": "/icons/icon-encrypt-16.png",
+                    "32": "/icons/icon-encrypt-32.png"
                 }
             });
 
@@ -65,8 +65,8 @@ function createContextMenu() {
                 title: titles.decrypt,
                 contexts: ["editable"],
                 icons: {
-                    "16": "icon-decrypt-16.png",
-                    "32": "icon-decrypt-32.png"
+                    "16": "/icons/icon-decrypt-16.png",
+                    "32": "/icons/icon-decrypt-32.png"
                 }
             });
         });
