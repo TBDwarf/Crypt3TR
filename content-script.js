@@ -1,63 +1,28 @@
-const PBKDF2_ITERATIONS = 100000;
-const PBKDF2_HASH = "SHA-256";
-const KEY_LENGTH_BITS = 256;
-const AES_ALGO = "AES-GCM";
-const STORAGE_KEY = "crypt3trSettings";
+const STORAGE_KEY = "crypt3trSettings"; // utilisé seulement par background désormais
 
 const CRYPT_REGEX = /\[\[crypt3tr\]\]([\s\S]*?)\[\[\/crypt3tr\]\]/gi;
 
+// Intervalle minimum entre deux scans complets (throttle)
+const THROTTLE_MS = 200;
+
 let cachedSettings = null;
 
-// ---- Obfuscation helpers (lecture seule) ----
+// ---- Chargement paramètres depuis background ----
 
-function decodeBase64(b64) {
-    const bin = atob(b64);
-    const bytes = new Uint8Array(bin.length);
-    for (let i = 0; i < bin.length; i++) {
-        bytes[i] = bin.charCodeAt(i);
-    }
-    return bytes;
-}
-
-function xorBytes(data, key) {
-    const out = new Uint8Array(data.length);
-    for (let i = 0; i < data.length; i++) {
-        out[i] = data[i] ^ key[i % key.length];
-    }
-    return out;
-}
-
-function deobfuscatePassword(obfPassword, obfKey) {
-    if (!obfPassword || !obfKey) return "";
+async function loadSettingsRemote() {
+    if (cachedSettings) return cachedSettings;
     try {
-        const obfBytes = decodeBase64(obfPassword);
-        const keyBytes = decodeBase64(obfKey);
-        const plainBytes = xorBytes(obfBytes, keyBytes);
-        const pw = new TextDecoder().decode(plainBytes);
-        return pw.replace(/\0+$/g, ""); // nettoyage éventuel
+        const res = await browser.runtime.sendMessage({ type: "GET_SETTINGS" });
+        cachedSettings = {
+            enabled: !!res.enabled,
+            whitelist: res.whitelist || ["*.*"],
+            hasPassword: !!res.hasPassword
+        };
+        return cachedSettings;
     } catch (e) {
-        console.error("[Crypt3TR] Erreur de dé-obfuscation du mot de passe:", e);
-        return "";
+        console.error("[Crypt3TR] Error getting settings from background:", e);
+        return { enabled: false, whitelist: [], hasPassword: false };
     }
-}
-
-// ---- Storage / settings ----
-
-async function loadSettings() {
-    const res = await browser.storage.local.get(STORAGE_KEY);
-    const raw = res[STORAGE_KEY] || {};
-
-    const settings = {
-        enabled: raw.enabled !== undefined ? raw.enabled : true,
-        obfPassword: raw.obfPassword || "",
-        obfKey: raw.obfKey || "",
-        whitelist: raw.whitelist || ["*.*"],
-        password: ""
-    };
-
-    settings.password = deobfuscatePassword(settings.obfPassword, settings.obfKey);
-    cachedSettings = settings;
-    return settings;
 }
 
 // Wildcard simple : * -> .*, ? -> .
@@ -80,96 +45,36 @@ function isHostAllowed(host, whitelist) {
     });
 }
 
-// ---- Crypto helpers ----
+// ---- Appels crypto vers le background ----
 
-function base64ToArrayBuffer(b64) {
-    const binary = atob(b64);
-    const len = binary.length;
-    const bytes = new Uint8Array(len);
-    for (let i = 0; i < len; i++) {
-        bytes[i] = binary.charCodeAt(i);
-    }
-    return bytes.buffer;
-}
-
-function arrayBufferToString(buf) {
-    return new TextDecoder().decode(new Uint8Array(buf));
-}
-
-function stringToArrayBuffer(str) {
-    return new TextEncoder().encode(str);
-}
-
-async function deriveKey(passphrase, salt) {
-    const passphraseKey = await crypto.subtle.importKey(
-        "raw",
-        stringToArrayBuffer(passphrase),
-                                                        { name: "PBKDF2" },
-                                                        false,
-                                                        ["deriveKey"]
-    );
-
-    return crypto.subtle.deriveKey(
-        {
-            name: "PBKDF2",
-            salt: salt,
-            iterations: PBKDF2_ITERATIONS,
-            hash: PBKDF2_HASH
-        },
-        passphraseKey,
-        { name: AES_ALGO, length: KEY_LENGTH_BITS },
-        false,
-        ["encrypt", "decrypt"]
-    );
-}
-
-async function decryptBlock(b64Data, passphrase) {
+async function encryptMessageRemote(message) {
     try {
-        const data = new Uint8Array(base64ToArrayBuffer(b64Data.trim()));
-
-        if (data.length < 16 + 12 + 16) {
-            throw new Error("Données trop courtes");
-        }
-
-        const salt = data.slice(0, 16);
-        const iv = data.slice(16, 28);
-        const ciphertext = data.slice(28);
-
-        const key = await deriveKey(passphrase, salt);
-
-        const decrypted = await crypto.subtle.decrypt(
-            { name: AES_ALGO, iv: iv },
-            key,
-            ciphertext
-        );
-
-        return arrayBufferToString(decrypted);
+        const res = await browser.runtime.sendMessage({
+            type: "ENCRYPT_TEXT",
+            text: message
+        });
+        if (res && res.success) return res.text;
+        return message;
     } catch (e) {
-        console.error("[Crypt3TR] Erreur de déchiffrement : ", e);
-        return "[[Erreur de déchiffrement]]";
+        console.error("[Crypt3TR] Error ENCRYPT_TEXT:", e);
+        return message;
     }
 }
 
-async function encryptMessage(passphrase, message) {
-    const salt = crypto.getRandomValues(new Uint8Array(16));
-    const iv = crypto.getRandomValues(new Uint8Array(12));
-
-    const key = await deriveKey(passphrase, salt);
-    const ciphertext = new Uint8Array(
-        await crypto.subtle.encrypt(
-            { name: AES_ALGO, iv: iv },
-            key,
-            stringToArrayBuffer(message)
-        )
-    );
-
-    const data = new Uint8Array(salt.length + iv.length + ciphertext.length);
-    data.set(salt, 0);
-    data.set(iv, salt.length);
-    data.set(ciphertext, salt.length + iv.length);
-
-    const b64 = btoa(String.fromCharCode(...data));
-    return `[[crypt3tr]]${b64}[[/crypt3tr]]`;
+async function decryptBlockRemote(b64Data) {
+    try {
+        const res = await browser.runtime.sendMessage({
+            type: "DECRYPT_BLOCK",
+            data: b64Data
+        });
+        if (res && res.success) return res.text;
+        const t = (typeof getStrings === "function") ? getStrings() : null;
+        return t ? t.decryptionError : "[[Decryption Error]]";
+    } catch (e) {
+        console.error("[Crypt3TR] Error DECRYPT_BLOCK:", e);
+        const t = (typeof getStrings === "function") ? getStrings() : null;
+        return t ? t.decryptionError : "[[Decryption Error]]";
+    }
 }
 
 // ---- Zones éditables ----
@@ -282,10 +187,36 @@ function textToNodesWithBr(text) {
     return frag;
 }
 
+// ---- Déchiffrement d'une chaîne contenant des balises [[crypt3tr]] ----
+
+async function decryptStringWithMarkers(text) {
+    if (!text) return text;
+
+    let resultParts = [];
+    let lastIndex = 0;
+    let match;
+
+    CRYPT_REGEX.lastIndex = 0;
+    while ((match = CRYPT_REGEX.exec(text)) !== null) {
+        const fullMatch = match[0];
+        const innerB64 = match[1];
+
+        resultParts.push(text.slice(lastIndex, match.index));
+
+        const decrypted = await decryptBlockRemote(innerB64);
+        resultParts.push(decrypted);
+
+        lastIndex = match.index + fullMatch.length;
+    }
+
+    resultParts.push(text.slice(lastIndex));
+    return resultParts.join("");
+}
+
 // ---- Décryptage : niveau nœud texte (inline) ----
 
-async function processTextNodes(root, passphrase) {
-    if (!root || !passphrase) return;
+async function processTextNodes(root) {
+    if (!root) return;
 
     const walker = document.createTreeWalker(
         root,
@@ -308,25 +239,8 @@ async function processTextNodes(root, passphrase) {
     }
 
     for (const textNode of nodesToUpdate) {
-        let text = textNode.nodeValue;
-        let match;
-        let resultParts = [];
-        let lastIndex = 0;
-
-        while ((match = CRYPT_REGEX.exec(text)) !== null) {
-            const fullMatch = match[0];
-            const innerB64 = match[1];
-
-            resultParts.push(text.slice(lastIndex, match.index));
-
-            const decrypted = await decryptBlock(innerB64, passphrase);
-            resultParts.push(decrypted);
-
-            lastIndex = match.index + fullMatch.length;
-        }
-
-        resultParts.push(text.slice(lastIndex));
-        const finalText = resultParts.join("");
+        const text = textNode.nodeValue;
+        const finalText = await decryptStringWithMarkers(text);
 
         if (!finalText.includes("\n") || !textNode.parentNode) {
             textNode.nodeValue = finalText;
@@ -339,8 +253,8 @@ async function processTextNodes(root, passphrase) {
 
 // ---- Décryptage : éléments entiers (Gmail & co) ----
 
-async function processElementBlocks(root, passphrase) {
-    if (!root || !passphrase) return;
+async function processElementBlocks(root) {
+    if (!root) return;
 
     const walker = document.createTreeWalker(
         root,
@@ -390,7 +304,7 @@ async function processElementBlocks(root, passphrase) {
         if (!match) continue;
 
         const innerB64 = match[1];
-        const decrypted = await decryptBlock(innerB64, passphrase);
+        const decrypted = await decryptBlockRemote(innerB64);
 
         while (elToUpdate.firstChild) {
             elToUpdate.removeChild(elToUpdate.firstChild);
@@ -401,80 +315,67 @@ async function processElementBlocks(root, passphrase) {
     }
 }
 
-async function processRootAndShadows(root, passphrase) {
-    await processTextNodes(root, passphrase);
-    await processElementBlocks(root, passphrase);
+async function processRootAndShadows(root) {
+    await processTextNodes(root);
+    await processElementBlocks(root);
 
     if (root.querySelectorAll) {
         const allElements = root.querySelectorAll("*");
         for (const el of allElements) {
             if (el.shadowRoot) {
-                await processRootAndShadows(el.shadowRoot, passphrase);
+                await processRootAndShadows(el.shadowRoot);
             }
         }
     }
 }
 
-// ---- Déchiffrement d'une chaîne contenant des balises [[crypt3tr]] ----
-
-async function decryptStringWithMarkers(text, passphrase) {
-    if (!text || !passphrase) return text;
-
-    let resultParts = [];
-    let lastIndex = 0;
-    let match;
-
-    CRYPT_REGEX.lastIndex = 0;
-    while ((match = CRYPT_REGEX.exec(text)) !== null) {
-        const fullMatch = match[0];
-        const innerB64 = match[1];
-
-        resultParts.push(text.slice(lastIndex, match.index));
-
-        const decrypted = await decryptBlock(innerB64, passphrase);
-        resultParts.push(decrypted);
-
-        lastIndex = match.index + fullMatch.length;
-    }
-
-    resultParts.push(text.slice(lastIndex));
-    return resultParts.join("");
-}
-
 // ---- Chiffrement du champ actif ----
 
-async function encryptActiveField(passphrase) {
-    if (!passphrase) return;
+async function encryptActiveField() {
+    const settings = await loadSettingsRemote();
+    if (!settings.enabled || !settings.hasPassword) return;
+    const host = window.location.hostname;
+    if (!isHostAllowed(host, settings.whitelist)) return;
 
     const active = document.activeElement;
     if (!active) return;
 
+    let textToEncrypt = "";
+    let isInput = false;
+
     if (active.tagName) {
         const tag = active.tagName.toLowerCase();
         if (tag === "textarea" || tag === "input") {
-            const value = active.value || "";
-            if (!value) return;
-            const encrypted = await encryptMessage(passphrase, value);
-            active.value = encrypted;
-            return;
+            textToEncrypt = active.value || "";
+            isInput = true;
         }
     }
 
-    if (active.isContentEditable) {
-        const text = getPlainTextWithNewlines(active);
-        if (!text) return;
-        const encrypted = await encryptMessage(passphrase, text);
-        active.textContent = encrypted;
-        return;
+    if (!isInput && active.isContentEditable) {
+        textToEncrypt = getPlainTextWithNewlines(active);
+        isInput = false;
+    }
+
+    if (!textToEncrypt || textToEncrypt.trim() === "") return;
+
+    const encrypted = await encryptMessageRemote(textToEncrypt);
+
+    if (isInput) {
+        active.value = encrypted;
+        active.dispatchEvent(new Event('input', { bubbles: true }));
+    } else if (active.isContentEditable) {
+        document.execCommand('selectAll', false, null);
+        document.execCommand('insertText', false, encrypted);
     }
 }
 
 // ---- Déchiffrement du champ actif ----
 
-// ---- Déchiffrement du champ actif ----
-
-async function decryptActiveField(passphrase) {
-    if (!passphrase) return;
+async function decryptActiveField() {
+    const settings = await loadSettingsRemote();
+    if (!settings.enabled || !settings.hasPassword) return;
+    const host = window.location.hostname;
+    if (!isHostAllowed(host, settings.whitelist)) return;
 
     const active = document.activeElement;
     if (!active) return;
@@ -484,8 +385,9 @@ async function decryptActiveField(passphrase) {
         if (tag === "textarea" || tag === "input") {
             const value = active.value || "";
             if (!value) return;
-            const decrypted = await decryptStringWithMarkers(value, passphrase);
+            const decrypted = await decryptStringWithMarkers(value);
             active.value = decrypted;
+            active.dispatchEvent(new Event('input', { bubbles: true }));
             return;
         }
     }
@@ -493,69 +395,89 @@ async function decryptActiveField(passphrase) {
     if (active.isContentEditable) {
         const text = getPlainTextWithNewlines(active);
         if (!text) return;
-        const decrypted = await decryptStringWithMarkers(text, passphrase);
+        const decrypted = await decryptStringWithMarkers(text);
 
-        // IMPORTANT : on reconstruit avec <br> pour garder les sauts de ligne
-        while (active.firstChild) {
-            active.removeChild(active.firstChild);
-        }
-        const frag = textToNodesWithBr(decrypted);
-        active.appendChild(frag);
+        document.execCommand('selectAll', false, null);
+        document.execCommand('insertText', false, decrypted);
         return;
     }
 }
 
-// ---- Messages depuis background (Encrypt / Decrypt) ----
+// ---- Messages depuis background (Encrypt / Decrypt champ actif) ----
 
 browser.runtime.onMessage.addListener((msg) => {
     if (!msg || !msg.type) return;
 
     if (msg.type === "ENCRYPT_FIELD") {
-        return (async () => {
-            const settings = await loadSettings();
-            if (!settings.enabled || !settings.password) return;
-            const host = window.location.hostname;
-            if (!isHostAllowed(host, settings.whitelist)) return;
-
-            await encryptActiveField(settings.password);
-        })();
+        return encryptActiveField();
     }
-
     if (msg.type === "DECRYPT_FIELD") {
-        return (async () => {
-            const settings = await loadSettings();
-            if (!settings.enabled || !settings.password) return;
-            const host = window.location.hostname;
-            if (!isHostAllowed(host, settings.whitelist)) return;
-
-            await decryptActiveField(settings.password);
-        })();
+        return decryptActiveField();
     }
 });
 
-// ---- Init : décryptage auto en lecture ----
+// ---- Init : décryptage auto en lecture avec THROTTLE ----
 
 (async function init() {
-    const settings = await loadSettings();
+    const settings = await loadSettingsRemote();
     const host = window.location.hostname;
 
     if (!settings.enabled) return;
-    if (!settings.password) return;
+    if (!settings.hasPassword) return;
     if (!isHostAllowed(host, settings.whitelist)) return;
 
-    const passphrase = settings.password;
+    // Scan initial complet
+    await processRootAndShadows(document);
 
-    processRootAndShadows(document, passphrase);
+    let lastProcessTime = 0;
+    let pendingTimeout = null;
+    let pendingRootList = [];
+
+    async function runProcess() {
+        const roots = pendingRootList.length ? pendingRootList.slice() : [document];
+        pendingRootList = [];
+        lastProcessTime = Date.now();
+        pendingTimeout = null;
+
+        for (const root of roots) {
+            try {
+                await processRootAndShadows(root);
+            } catch (e) {
+                console.error("[Crypt3TR] Error in processRootAndShadows:", e);
+            }
+        }
+    }
 
     const observer = new MutationObserver((mutations) => {
+        const now = Date.now();
+
         for (const mut of mutations) {
             for (const node of mut.addedNodes) {
                 if (node.nodeType === Node.ELEMENT_NODE) {
-                    processRootAndShadows(node, passphrase);
+                    pendingRootList.push(node);
                     if (node.shadowRoot) {
-                        processRootAndShadows(node.shadowRoot, passphrase);
+                        pendingRootList.push(node.shadowRoot);
                     }
                 }
+            }
+        }
+
+        if (pendingRootList.length === 0) return;
+
+        const delta = now - lastProcessTime;
+
+        if (delta >= THROTTLE_MS) {
+            if (pendingTimeout) {
+                clearTimeout(pendingTimeout);
+                pendingTimeout = null;
+            }
+            runProcess();
+        } else {
+            if (!pendingTimeout) {
+                const wait = THROTTLE_MS - delta;
+                pendingTimeout = setTimeout(() => {
+                    runProcess();
+                }, wait);
             }
         }
     });

@@ -1,12 +1,13 @@
 {
   "manifest_version": 2,
   "name": "Crypt3TR",
-  "version": "1.0",
-  "description": "Client-side text encryption and decryption for web pages and webmail.",
+  "version": "1.1",
+  "description": "Text encryption extension for the web: encrypt your messages on any site with a single password, directly in your browser, with no servers and no data collection.",
   "icons": {
     "32": "/icons/icon-32.png",
     "48": "/icons/icon-48.png",
-    "96": "/icons/icon-96.png"
+    "96": "/icons/icon-96.png",
+    "128": "/icons/icon-128.png"
   },
   "browser_action": {
     "default_title": "Crypt3TR",
@@ -23,12 +24,20 @@
     "<all_urls>"
   ],
   "background": {
-    "scripts": ["background.js"]
+    "scripts": [
+      "lang.js",
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
-      "js": ["content-script.js"],
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "lang.js",
+        "content-script.js"
+      ],
       "run_at": "document_idle"
     }
   ],
@@ -36,8 +45,10 @@
     "gecko": {
       "id": "crypt3tr@invalid",
       "data_collection_permissions": {
-        "collects_data": false,
-        "required": ["none"]
+        "required": [
+          "none"
+        ],
+        "optional": []
       }
     }
   }
