@@ -7,6 +7,96 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.1.0] - 2025-XX-XX
+
+### ✨ Ajouté
+
+#### Stockage sécurisé du mot de passe
+
+- 🔐 Introduction d’une **clé maîtresse AES‑256‑GCM non extractible** pour protéger le mot de passe utilisateur.
+- 🗄️ Stockage de la clé maîtresse dans une base **IndexedDB** dédiée (`crypt3tr-keystore`) :
+  - Objet `CryptoKey` AES‑GCM non extractible.
+  - Utilisée uniquement dans le contexte de l’extension (background).
+- 🔑 Chiffrement du **mot de passe utilisateur** avec cette clé maîtresse :
+  - Génération d’un IV aléatoire (96 bits).
+  - Stockage du mot de passe sous la forme : `base64(iv || ciphertext)` dans `browser.storage.local`.
+
+#### Architecture & messages internes
+
+- 🧠 Centralisation de la **crypto des messages** dans le `background.js` :
+  - `ENCRYPT_TEXT` : chiffrement d’un texte avec le mot de passe stocké.
+  - `DECRYPT_BLOCK` : déchiffrement d’un bloc `[[Erreur de déchiffrement]]`.
+- 📡 API interne `runtime.sendMessage` pour :
+  - Récupérer la configuration (`GET_SETTINGS`).
+  - Activer/désactiver l’extension (`SET_ENABLED`).
+  - Mettre à jour la whitelist (`SET_WHITELIST`).
+  - Gérer le mot de passe (`SET_PASSWORD`, `CLEAR_PASSWORD`).
+
+#### Expérience utilisateur
+
+- 🟢 **Indicateur de statut** mis à jour :
+  - Dot verte uniquement si **extension activée** + **mot de passe défini**.
+- 🔁 **Rafraîchissement automatique** du statut dans le popup après :
+  - Sauvegarde / effacement du mot de passe.
+  - Modification de la whitelist.
+- 🌍 I18N améliorée dans le popup (`popup.js`) :
+  - Tous les textes principaux (labels, boutons, aides) pilotés par une table de traduction FR/EN.
+
+---
+
+### 🔧 Modifié
+
+#### Modèle de stockage du mot de passe
+
+- 🧊 Ancien modèle : obfuscation XOR + Base64 dans `browser.storage.local`.
+- 🔐 Nouveau modèle : **chiffrement fort** AES‑GCM avec clé maîtresse non extractible.
+- 🔄 Le mot de passe n’est plus “obfusqué” mais **réellement chiffré** côté extension.
+
+#### Architecture crypto
+
+- ♻️ Déplacement de la logique PBKDF2 + AES‑GCM :
+  - Du `content-script` vers le `background.js`.
+- 🧩 Le **content-script** ne manipule plus jamais le mot de passe en clair :
+  - Il envoie uniquement du texte à chiffrer / des blocs à déchiffrer au background.
+
+#### Comportement du content-script
+
+- ⚙️ Chargement des paramètres :
+  - `loadSettingsRemote()` interroge désormais uniquement le background (`GET_SETTINGS`).
+- 🕒 Amélioration du **throttling** du `MutationObserver` :
+  - Intervalle `THROTTLE_MS = 200` ms pour éviter les scans trop fréquents sur les pages dynamiques.
+- 🔍 Détection des zones éditables unifiée dans `isEditableNode()` (inputs, textarea, contentEditable).
+
+#### Documentation & texte
+
+- 📚 Mise à jour de la description de l’extension :
+  - Explication claire du nouveau modèle de sécurité (clé maîtresse, IndexedDB, AES‑GCM).
+  - Clarification du **modèle de menace** (ce que l’extension protège / ne protège pas).
+- 📝 Ajustement de la description du format de données chiffrées :
+  - Toujours au format : `[[Erreur de déchiffrement]]`.
+
+---
+
+### 🗑️ Retiré
+
+- ❌ **Obfuscation XOR** du mot de passe stocké :
+  - Remplacée par un chiffrement AES‑GCM avec clé maîtresse non extractible.
+  - Le mot de passe n’est plus stocké dans une forme réversible simple.
+
+---
+
+### 🔒 Sécurité
+
+- 🧱 **Renforcement du stockage des secrets** :
+  - Master key AES‑GCM marquée `extractable: false`.
+  - Stockage dans IndexedDB (store `keys`, clé `masterKey`).
+- 🚫 Aucune donnée utilisateur envoyée à un serveur :
+  - Les opérations de chiffrement/déchiffrement restent **100 % locales**.
+- 🧪 Gestion robuste des erreurs de déchiffrement :
+  - En cas d’échec, retour d’un message clair `[[Decryption Error]]` sans fuite d’info.
+
+---
+
 ## [1.0.0] - 2024-12-01
 
 ### 🎉 Première version publique
@@ -42,7 +132,7 @@ Version initiale de Crypt3TR avec toutes les fonctionnalités de base.
 
 #### Fonctionnalités de déchiffrement
 - 🔓 Déchiffrement automatique au chargement de la page
-  - Détection des blocs `[[crypt3tr]]...[[/crypt3tr]]`
+  - Détection des blocs `[[Erreur de déchiffrement]]`
   - Traitement des nœuds texte (inline)
   - Traitement des éléments entiers (Gmail, etc.)
 - 🌲 Support du Shadow DOM (webcomponents)
@@ -114,8 +204,6 @@ Marqueurs : [[crypt3tr]]...[/crypt3tr]]
 
 - ⚠️ Un seul mot de passe global (pas de multi-mots de passe par contact)
 - ⚠️ Pas de chiffrement de pièces jointes
-- ⚠️ Pas de signature numérique (authentification)
-- ⚠️ Obfuscation du mot de passe (non chiffrement fort)
 
 Ces limitations pourront être adressées dans les versions futures selon les retours de la communauté.
 
