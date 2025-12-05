@@ -7,7 +7,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
-## [1.1.0] - 2025-XX-XX
+## [1.1.0] - 2025-12-05
 
 ### ✨ Ajouté
 
@@ -97,7 +97,7 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
-## [1.0.0] - 2024-12-01
+## [1.0.0] - 2025-12-01
 
 ### 🎉 Première version publique
 
