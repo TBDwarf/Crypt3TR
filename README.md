@@ -4,12 +4,11 @@
 
 <img width="150" height="150" alt="Crypt3TR" src="https://github.com/user-attachments/assets/0b1919bb-59a2-4484-8916-2944ad6a855b" />
 
-
 **Chiffrement de texte côté client pour le web — Simple, rapide et transparent**
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Firefox](https://img.shields.io/badge/Firefox-Compatible-orange.svg)](https://www.mozilla.org/firefox/)
-[![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](CHANGELOG.md)
 [![Crypto](https://img.shields.io/badge/Crypto-AES--256--GCM-red.svg)](#-sécurité)
 
 [Installation](#-installation) • [Utilisation](#-utilisation) • [Exemples](#-exemple-concret--email-gmail) • [Sécurité](#-sécurité) • [FAQ](#-faq)
@@ -25,6 +24,7 @@
 - [Exemple concret : Email Gmail](#-exemple-concret--email-gmail)
 - [Comparaison avec PGP](#-comparaison-avec-pgp)
 - [Installation](#-installation)
+- [Configuration](#-configuration)
 - [Utilisation](#-utilisation)
 - [Sécurité](#-sécurité)
 - [Compatibilité](#-compatibilité)
@@ -36,18 +36,24 @@
 
 ## 🎯 Qu'est-ce que Crypt3TR ?
 
-**Crypt3TR** est une extension Firefox qui permet de **chiffrer et déchiffrer du texte directement dans votre navigateur**, sur n'importe quel site web. Que ce soit sur Gmail, un forum, un réseau social ou une messagerie, Crypt3TR protège vos messages de manière transparente.
+**Crypt3TR** est une extension Firefox qui permet de **chiffrer et déchiffrer du texte directement dans votre navigateur**, sur n'importe quel site web.  
+Webmail, forum, réseau social, messagerie en ligne, wiki, formulaire… si vous pouvez taper du texte, vous pouvez le chiffrer.
 
 ### 🌟 Fonctionnalités principales
 
-- 🔒 **Chiffrement AES-256-GCM** avec dérivation de clé PBKDF2 (100 000 itérations)
+- 🔒 **Chiffrement AES‑256‑GCM** avec dérivation de clé PBKDF2 (100 000 itérations)
 - ⚡ **Déchiffrement automatique** des messages sur les pages web
-- 🖱️ **Menu contextuel** pour chiffrer/déchiffrer en un clic
+- 🖱️ **Menu contextuel** pour chiffrer/déchiffrer en un clic (clic droit)
 - 🌐 **Whitelist de domaines** pour activer l'extension uniquement où vous le souhaitez
-- 📝 **Support complet** des champs éditables (textarea, input, contentEditable)
-- 🎭 **Shadow DOM** pris en charge pour les webapps modernes
-- 💾 **Stockage local sécurisé** du mot de passe (obfusqué)
-- 🌍 **Multilingue** (Français, Anglais)
+- 📝 **Support complet** des champs éditables :
+  - `<textarea>`
+  - `<input>` (text, email, password, url, tel, search)
+  - Éléments `contentEditable`
+  - Contenus dans certains **Shadow DOM** (webapps modernes)
+- 💾 **Stockage local sécurisé du mot de passe** :
+  - Mot de passe chiffré avec une **clé maîtresse AES‑GCM non extractible**
+- 🌍 **Multilingue** (Français / Anglais)
+- 🧩 **100 % local** : aucune collecte de données, aucun serveur, aucun tracking
 
 ---
 
@@ -55,20 +61,24 @@
 
 ### Le problème
 
-Vous voulez envoyer un message confidentiel par email, sur un forum ou via une messagerie web ? Les solutions existantes sont souvent :
-- **Complexes** à mettre en place (PGP, GPG)
-- **Lourdes** à utiliser (génération de clés, échange de clés publiques, etc.)
-- **Incompatibles** avec les webmails et messageries instantanées
-- **Peu pratiques** pour des échanges rapides
+Vous voulez envoyer un message **confidentiel** par email, sur un forum ou une messagerie web, mais :
+
+- Les solutions type **PGP / GPG** sont :
+  - 🧩 Complexes à configurer (génération de clés, gestion des clés publiques, etc.)
+  - 🧱 Peu intégrées aux webmails et messageries modernes
+- Les solutions “sécurisées” côté serveur demandent souvent :
+  - Un **compte externe**
+  - De **faire confiance** à un service tiers
 
 ### La solution Crypt3TR
 
 **Crypt3TR** rend le chiffrement aussi simple que :
+
 1. 📝 Écrivez votre message
-2. 🖱️ Clic droit → "Chiffrement du message"
+2. 🖱️ Clic droit → **“Chiffrement du message”**
 3. ✉️ Envoyez !
 
-Le destinataire qui possède le même mot de passe verra automatiquement le message déchiffré dans son navigateur.
+Le destinataire qui possède **le même mot de passe** et l’extension verra automatiquement le message déchiffré dans son navigateur (sur les domaines autorisés).
 
 ---
 
@@ -76,7 +86,8 @@ Le destinataire qui possède le même mot de passe verra automatiquement le mess
 
 ### Scénario
 
-Alice veut envoyer un email confidentiel à Bob via Gmail. Ils partagent un mot de passe commun : `MonMotDePasseSecret2024`
+Alice veut envoyer un email confidentiel à Bob via Gmail.  
+Ils partagent un mot de passe commun : `MonMotDePasseSecret2024`
 
 ### Étape par étape
 
@@ -85,7 +96,7 @@ Alice veut envoyer un email confidentiel à Bob via Gmail. Ils partagent un mot 
 - Installe l'extension
 - Clique sur l'icône Crypt3TR
 - Entre le mot de passe : `MonMotDePasseSecret2024`
-- Ajoute `*.google.com` à la whitelist ou garde le parametrage par défaut
+- Ajoute `*.google.com` à la whitelist (ou garde la configuration par défaut `*.*`)
 
 #### 2️⃣ Alice rédige son email
 
@@ -144,67 +155,73 @@ Alice
 ### 🎉 Résultat
 
 ✅ **Message confidentiel transmis**  
-✅ **Aucun tiers ne peut le lire** (même Gmail)  
-✅ **Processus transparent** pour Bob  
-✅ **Simple et rapide** pour Alice  
+✅ **Serveur et tiers ne voient que du texte chiffré**  
+✅ **Expérience transparente** pour Bob  
+✅ **Processus simple et rapide** pour Alice  
 
 ---
 
 ## 🆚 Comparaison avec PGP
 
-| Critère | Crypt3TR | PGP/GPG |
-|---------|----------|---------|
-| **Simplicité** | ⭐⭐⭐⭐⭐ Aucune configuration complexe | ⭐⭐ Génération de clés, échange de clés publiques |
-| **Installation** | ⭐⭐⭐⭐⭐ Extension Firefox en 1 clic | ⭐⭐ Logiciel + plugin email + configuration |
-| **Utilisation** | ⭐⭐⭐⭐⭐ Clic droit → Chiffrer | ⭐⭐⭐ Commandes CLI ou plugin |
-| **Compatibilité** | ⭐⭐⭐⭐⭐ Tout site web (Gmail, forums, etc.) | ⭐⭐ Principalement emails |
-| **Transparence** | ⭐⭐⭐⭐⭐ Déchiffrement automatique | ⭐⭐⭐ Déchiffrement manuel |
-| **Partage de clés** | ⭐⭐⭐⭐ Mot de passe partagé | ⭐⭐⭐⭐⭐ Clés publiques/privées |
-| **Sécurité** | ⭐⭐⭐⭐ AES-256-GCM | ⭐⭐⭐⭐⭐ RSA + AES |
+| Critère              | Crypt3TR                                           | PGP/GPG                                      |
+|----------------------|----------------------------------------------------|----------------------------------------------|
+| **Simplicité**       | ⭐⭐⭐⭐⭐ Aucune config complexe                      | ⭐⭐ Génération & gestion de clés             |
+| **Installation**     | ⭐⭐⭐⭐⭐ Extension Firefox                           | ⭐⭐ Logiciel + plugin mail                   |
+| **Utilisation**      | ⭐⭐⭐⭐⭐ Clic droit → Chiffrer                       | ⭐⭐⭐ Souvent manuel ou via plugin            |
+| **Compatibilité**    | ⭐⭐⭐⭐⭐ Tout site web (webmails, forums, chats)     | ⭐⭐ Principalement email                     |
+| **Transparence**     | ⭐⭐⭐⭐⭐ Déchiffrement automatique côté client       | ⭐⭐⭐ Variable selon l’intégration            |
+| **Partage de clé**   | ⭐⭐⭐⭐ Mot de passe partagé                         | ⭐⭐⭐⭐⭐ Clés publiques/privées                |
+| **Sécurité**         | ⭐⭐⭐⭐ AES‑256‑GCM, mot de passe unique             | ⭐⭐⭐⭐⭐ PKI, signatures, modèles avancés      |
 
-### 🎯 Quand utiliser Crypt3TR ?
+👉 **Crypt3TR est idéal pour :**
 
-**Crypt3TR est idéal pour :**
-- ✅ Échanger rapidement des messages confidentiels
-- ✅ Protéger vos conversations sur les webmails
-- ✅ Chiffrer des notes sur des forums ou wikis
-- ✅ Communiquer de manière sécurisée sur des messageries web
-- ✅ Partager des informations sensibles avec des collègues
+- Échanges rapides et confidentiels sur des **webmails**, forums, chats, wikis
+- Partage de **codes**, **accès**, **notes sensibles**
+- Des usages “quotidiens” où PGP est trop lourd
 
-**PGP est préférable pour :**
-- ✅ Authentification forte de l'identité (signature numérique)
-- ✅ Échange avec des personnes inconnues (pas de mot de passe partagé)
-- ✅ Conformité réglementaire stricte
-- ✅ Protection contre la compromission d'un mot de passe unique
+👉 **PGP reste préférable pour :**
+
+- Signature numérique, non‑répudiation
+- Environnements réglementés (entreprises, administrations)
+- Communications avec des inconnus sans mot de passe partagé
 
 ---
 
 ## 🚀 Installation
 
-### Firefox (Recommandé)
+### Firefox (Add-on officiel)
 
-#### Option 1 : Firefox Add-ons (À venir)
+L’extension est disponible sur le **store officiel Firefox** :
+
+➡️ **Page AMO :** <https://addons.mozilla.org/fr/firefox/addon/crypt3tr/>
+
+1. Ouvrez le lien ci-dessus dans Firefox
+2. Cliquez sur **“Ajouter à Firefox”**
+3. Validez l’installation
+4. L’icône Crypt3TR apparaît dans la barre d’outils
+
+### Installation manuelle (développement)
+
+Pour tester une version en développement ou modifier le code :
+
+1. **Cloner le dépôt**
+
+```bash
+git clone https://github.com/TBDwarf/Crypt3TR.git
+cd Crypt3TR
 ```
-🔜 Bientôt disponible sur addons.mozilla.org
-```
 
-#### Option 2 : Installation manuelle (Développement)
+2. **Ouvrir Firefox**
 
-1. **Clonez le dépôt**
-   ```bash
-   git clone https://github.com/TBDwarf/Crypt3TR.git
-   cd Crypt3TR
-   ```
+- Tapez `about:debugging` dans la barre d'adresse
+- Cliquez sur **“Ce Firefox”** (This Firefox)
 
-2. **Ouvrez Firefox**
-   - Tapez `about:debugging` dans la barre d'adresse
-   - Cliquez sur "Ce Firefox" (This Firefox)
+3. **Charger l'extension en local**
 
-3. **Chargez l'extension**
-   - Cliquez sur "Charger un module complémentaire temporaire"
-   - Sélectionnez le fichier `manifest.json` dans le dossier Crypt3TR
+- Cliquez sur **“Charger un module complémentaire temporaire”**
+- Sélectionnez le fichier `manifest.json` dans le dossier `Crypt3TR`
 
-4. **C'est fait !** 🎉
+4. ✅ L’icône Crypt3TR apparaît dans la barre d’outils
 
 ---
 
@@ -212,15 +229,16 @@ Alice
 
 ### Première utilisation
 
-1. **Cliquez sur l'icône Crypt3TR** dans la barre d'outils Firefox
-2. **Activez l'extension** (cochée par défaut)
+1. **Cliquez sur l'icône Crypt3TR** dans la barre d'outils
+2. Vérifiez que l’extension est **activée**
 3. **Définissez votre mot de passe** de chiffrement
-   - Ce mot de passe sera utilisé pour chiffrer/déchiffrer vos messages
-   - ⚠️ **Important :** Partagez ce mot de passe avec vos correspondants via un canal sécurisé (Signal, rencontre physique, etc.)
-4. **Configurez la whitelist** (optionnel)
+   - Il sera utilisé pour chiffrer/déchiffrer tous vos messages
+   - 🔐 Choisissez un mot de passe fort et unique
+   - ⚠️ Partagez-le avec vos correspondants via un **canal sécurisé** (Signal, IRL, etc.)
+4. **Configurez la whitelist** (si besoin)
    - Par défaut : `*.*` (tous les sites)
-   - Exemples :
-     ```
+   - Vous pouvez restreindre à certains domaines :
+     ```text
      *.google.com
      *.tuta.com
      *.protonmail.com
@@ -229,11 +247,16 @@ Alice
 
 ### Paramètres
 
-| Paramètre | Description | Valeur par défaut |
-|-----------|-------------|-------------------|
-| **Extension activée** | Active/désactive Crypt3TR | ✅ Activée |
-| **Mot de passe** | Mot de passe de chiffrement | (vide) |
-| **Whitelist** | Domaines autorisés | `*.*` (tous) |
+| Paramètre            | Description                                   | Valeur par défaut |
+|----------------------|-----------------------------------------------|-------------------|
+| **Extension activée**| Active/désactive Crypt3TR                     | ✅ Activée        |
+| **Mot de passe**     | Mot de passe de chiffrement                   | (vide)            |
+| **Whitelist**        | Domaines autorisés (wildcards supportés)      | `*.*`             |
+
+L’indicateur dans le popup affiche :
+
+- 🔴 Extension désactivée
+- 🟢 Activée et mot de passe configuré
 
 ---
 
@@ -268,8 +291,8 @@ Alice
 
 ### Cryptographie
 
-- **Algorithm** : AES-256-GCM (Galois/Counter Mode)
-- **Dérivation de clé** : PBKDF2 avec SHA-256
+- **Algorithme** : AES‑256‑GCM (Galois/Counter Mode)
+- **Dérivation de clé** : PBKDF2 avec SHA‑256
 - **Itérations PBKDF2** : 100 000
 - **Salt** : 128 bits aléatoires (16 octets)
 - **IV (Initialization Vector)** : 96 bits aléatoires (12 octets)
@@ -281,40 +304,98 @@ Alice
 [[crypt3tr]]<base64(salt || iv || ciphertext)>[[/crypt3tr]]
 ```
 
-- **Salt** (16 octets) : Utilisé pour la dérivation de clé PBKDF2
-- **IV** (12 octets) : Vecteur d'initialisation pour AES-GCM
-- **Ciphertext** (variable) : Texte chiffré + tag d'authentification GCM
+- **salt (16 octets)** : utilisé pour la dérivation de clé PBKDF2  
+- **iv (12 octets)** : vecteur d’initialisation pour AES‑GCM  
+- **ciphertext+tag** : texte chiffré + tag d’authentification GCM
 
-### Stockage du mot de passe
+---
 
-Le mot de passe est **stocké localement** dans le navigateur :
-- **Obfuscation** : XOR avec une clé aléatoire (32 octets)
-- **Encodage** : Base64
-- **Localisation** : `browser.storage.local`
+### Stockage du mot de passe (v1.1)
 
-⚠️ **Important :** L'obfuscation n'est **pas un chiffrement fort**. Elle protège contre une lecture passive du storage, mais pas contre un attaquant ayant accès au code de l'extension. Le mot de passe reste dans la mémoire du navigateur tant que l'extension est active.
+Le mot de passe **n’est plus stocké en clair ni simplement obfusqué**.  
+Il est désormais chiffré de manière forte :
+
+- 🧩 **Clé maîtresse AES‑GCM non extractible**
+  - Générée via WebCrypto dans `background.js`
+  - `extractable: false` → les bits de la clé ne peuvent pas être exportés
+  - Stockée dans **IndexedDB** (`crypt3tr-keystore`, store `keys`, clé `masterKey`)
+
+- 🔐 **Chiffrement du mot de passe utilisateur**
+  - Lors de la sauvegarde du mot de passe :
+    - génération d’un IV aléatoire (96 bits),
+    - chiffrement du mot de passe avec la clé maîtresse (AES‑GCM),
+    - concaténation `iv || ciphertext`, puis encodage Base64,
+    - stockage dans `browser.storage.local` (`encryptedPassword`).
+
+- 🔓 **Utilisation pour chiffrer/déchiffrer les messages**
+  - Lors d’un `ENCRYPT_TEXT` / `DECRYPT_BLOCK` :
+    - le background récupère `encryptedPassword`,
+    - le déchiffre avec la clé maîtresse,
+    - dérive une clé de message avec PBKDF2 (salt inclus dans le bloc),
+    - chiffre ou déchiffre le texte demandé.
+
+- 🧠 Le **content-script ne voit jamais le mot de passe en clair** :
+  - Il envoie uniquement :
+    - du texte brut à chiffrer (`ENCRYPT_TEXT`),
+    - des blocs encodés Base64 à déchiffrer (`DECRYPT_BLOCK`),
+  - tout le secret (mot de passe, master key) reste dans le contexte du background.
+
+---
+
+### Modèle de menace & limites
+
+Crypt3TR **protège principalement** contre :
+
+- La lecture directe de vos messages par le **serveur** (webmail, forum, etc.) :
+  - le serveur stocke le bloc chiffré `[[Erreur de déchiffrement]]`.
+- La récupération simple de votre **mot de passe** à partir du `browser.storage.local` :
+  - le mot de passe est chiffré avec une clé maîtresse non extractible.
+
+Crypt3TR **ne protège pas** contre :
+
+- Les **keyloggers**, malwares ou un système d’exploitation déjà compromis.
+- Les **autres extensions malveillantes** capables de lire ou modifier le DOM.
+- Un **site web malveillant** que vous auriez ajouté dans la whitelist :
+  - dès qu’un message est déchiffré et inséré dans la page, ce site peut techniquement lire le texte comme n’importe quel autre contenu.
+- Les compromissions locales de votre profil Firefox ou des accès physiques à votre machine.
+- Les besoins avancés de PGP :
+  - signature numérique, non‑répudiation,
+  - gestion fine d’identités, modèles de confiance complexes.
+
+---
 
 ### Bonnes pratiques
 
 ✅ **À faire :**
-- Utilisez un **mot de passe fort et unique** (20+ caractères, alphanumérique + symboles)
-- **Partagez le mot de passe** via un canal sécurisé (Signal, rencontre physique etc.)
-- **Limitez la whitelist** aux domaines où vous utilisez le chiffrement
+
+- Utiliser un **mot de passe fort et unique** :
+  - au moins 20 caractères, mélange de lettres, chiffres et symboles.
+- Partager ce mot de passe via un **canal sécurisé** :
+  - Signal, rencontre physique, téléphone chiffré, etc.
+- Restreindre la **whitelist** aux domaines réellement utilisés :
+  - éviter de laisser `*.*` si vous n’en avez pas besoin partout.
+- Garder votre système et votre navigateur **à jour**.
 
 ❌ **À éviter :**
-- ❌ Ne partagez **jamais** le mot de passe par email non chiffré
-- ❌ N'utilisez **pas** le même mot de passe que vos comptes en ligne
-- ❌ N'utilisez **pas** Crypt3TR sur des ordinateurs publics ou non sécurisés
-- ❌ Ne stockez **pas** le mot de passe dans un fichier texte non chiffré
+
+- ❌ Ne pas envoyer le mot de passe par email non chiffré.
+- ❌ Ne pas réutiliser un mot de passe déjà utilisé pour vos comptes (email, banque, etc.).
+- ❌ Ne pas utiliser Crypt3TR sur des **machines publiques** ou non fiables.
+- ❌ Ne pas stocker votre mot de passe dans un fichier texte non chiffré.
+
+---
 
 ### Limitations connues
 
 ⚠️ **Crypt3TR ne protège pas contre :**
-- Les keyloggers ou malwares sur votre système
-- Les attaques par force brute si votre mot de passe est faible
-- La compromission de votre session Firefox (XSS, extensions malveillantes)
-- L'analyse de trafic réseau (métadonnées, taille des messages)
 
+- Les enregistreurs de frappes (keyloggers) et malwares installés sur la machine.
+- Les attaques sur le navigateur lui‑même (failles, profil compromis).
+- Les autres extensions ayant accès au contenu des pages.
+- L’analyse de trafic réseau (métadonnées, taille des messages).
+- Les attaques par force brute sur un mot de passe faible.
+
+Pour des besoins de **signature, non‑répudiation ou conformité réglementaire stricte**, préférez des solutions basées sur des **clés publiques/privées** (PGP, S/MIME, etc.).
 ---
 
 ## 🌐 Compatibilité
@@ -330,7 +411,8 @@ Le mot de passe est **stocké localement** dans le navigateur :
 | Site | Type | Compatibilité |
 |------|------|---------------|
 | **Gmail** | Webmail | ✅ Complet |
-| **Tuta** | Webmail | ✅ Complet |
+| **Discord** | Messagerie | ✅ Complet |
+| **Whatsapp** | Messagerie | ✅ Complet |
 
 ### Types de champs supportés
 
