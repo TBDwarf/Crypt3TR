@@ -7,6 +7,74 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.2.0] - 2025-12-08
+
+### ✨ Ajouté
+
+#### Isolation DOM / iframe d’extension
+
+- 🧩 Clarification et amélioration de l’**isolation entre le DOM de la page et l’extension** :
+  - Mise en avant du fait que le traitement sensible (mot de passe, dérivation de clé, chiffrement/déchiffrement) se fait dans le **contexte de l’extension** (background / iframe d’extension), et non dans la page.
+  - Documentation de l’utilisation d’une **iframe d’extension isolée** (`moz-extension://…`) pour certaines opérations d’UI/sécurité.
+- 📖 Nouveau sous-chapitre dans le README :
+  - `Isolation via iframe d’extension` dans la section **Sécurité**.
+  - Explication du fait que le **JavaScript de la page** n’a pas accès aux variables internes de l’extension.
+
+#### Comportement DOM et iframes
+
+- 🧱 Documentation plus précise sur le traitement :
+  - des champs à l’intérieur d’**iframes** dont le domaine est autorisé dans la whitelist ;
+  - du **Shadow DOM** et des webcomponents modernes.
+- 🔍 Ajout dans le README d’une mention explicite :
+  - Support des champs texte dans les iframes (si le domaine de l’iframe est autorisé).
+  - Rappel que, dès qu’un texte est réinjecté en clair dans le DOM (page ou iframe), **le site peut techniquement le lire**.
+
+---
+
+### 🔧 Modifié
+
+#### Modèle de menace & explications sécurité
+
+- 📚 Mise à jour de la section **Modèle de menace & limites** dans le README :
+  - Clarification de ce qui est protégé par l’isolation d’extension (background / iframe d’extension).
+  - Reformulation pour insister sur la séparation entre :
+    - le **contexte de la page** (DOM, JavaScript du site) ;
+    - le **contexte de l’extension** (background, iframe d’extension, WebCrypto).
+- 💬 Reformulation légère du paragraphe indiquant que :
+  - le **content-script** ne voit jamais le mot de passe en clair ;
+  - tout le secret (mot de passe, master key) reste dans le **contexte de l’extension**, jamais dans le DOM de la page.
+
+#### Documentation technique
+
+- 📝 Ajout d’une phrase explicite dans la documentation :
+  - Les opérations sensibles (mot de passe, dérivation de clé, chiffrement/déchiffrement) restent dans le **contexte isolé de l’extension** ; le DOM de la page ne voit que le résultat final quand l’utilisateur choisit d’afficher le texte en clair.
+- 🧠 Mise en cohérence des sections expliquant le rôle du `background.js`, du content-script et de l’iframe d’extension.
+
+---
+
+### 🐛 Corrigé
+
+#### Incohérences de format de blocs chiffrés dans la doc
+
+- 🐞 Correction des références documentaires erronées au format :
+  - `[[Erreur de déchiffrement]]` remplacé par le format réel :  
+    `[[crypt3tr]]...[[/crypt3tr]]`
+- 📚 Harmonisation du README et du CHANGELOG pour :
+  - la description du format de données chiffrées ;
+  - les exemples de messages chiffrés/déchiffrés ;
+  - les mentions dans le modèle de menace.
+
+---
+
+### 🔒 Sécurité
+
+- 🧱 Mise en avant de l’**isolation entre page et extension** dans la doc :
+  - Rappel que le site ne peut pas “lire une variable JS” pour récupérer le mot de passe / clé maîtresse, celles-ci ne vivant que dans le contexte de l’extension.
+- 🛡️ Clarification de la limite :
+  - Une fois qu’un message est déchiffré et inséré en clair dans le DOM (page ou iframe autorisée), il devient lisible par le JavaScript de ce site comme n’importe quel autre contenu.
+
+---
+
 ## [1.1.0] - 2025-12-05
 
 ### ✨ Ajouté
