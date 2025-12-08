@@ -53,7 +53,7 @@ function applyI18n() {
     if (step2Title) step2Title.textContent = t.step2Title;
     if (step3Title) step3Title.textContent = t.step3Title;
 
-    // Aide : descriptions (construction DOM sans innerHTML)
+    // Aide : textes structurés (construction DOM sans innerHTML)
 
     // 1) helpEncrypt : texte + <b>...</b> + texte
     const helpEncrypt = document.getElementById("helpEncrypt");

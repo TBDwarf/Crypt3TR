@@ -1,10 +1,9 @@
 const MENU_ID_ENCRYPT = "crypt3tr-encrypt";
-const MENU_ID_DECRYPT = "crypt3tr-decrypt";
 
 const STORAGE_KEY = "crypt3trSettings";
 
 // Crypto constants pour le chiffrement des messages
-const PBKDF2_ITERATIONS = 100000;
+const PBKDF2_ITERATIONS = 500000;
 const PBKDF2_HASH = "SHA-256";
 const KEY_LENGTH_BITS = 256;
 const AES_ALGO = "AES-GCM";
@@ -183,7 +182,7 @@ async function getUserPassword() {
     }
 }
 
-// ---- Crypto messages (AES-GCM + PBKDF2, comme avant, mais ici dans background) ----
+// ---- Crypto messages (AES-GCM + PBKDF2) ----
 
 async function deriveMessageKey(passphrase, salt) {
     const passphraseKey = await crypto.subtle.importKey(
@@ -255,13 +254,11 @@ function getMenuTitles() {
     const t = (typeof getStrings === "function") ? getStrings() : null;
     if (!t) {
         return {
-            encrypt: "Encrypt message",
-            decrypt: "Decrypt message"
+            encrypt: "Encrypt message"
         };
     }
     return {
-        encrypt: t.encryptMenu,
-        decrypt: t.decryptMenu
+        encrypt: t.encryptMenu
     };
 }
 
@@ -280,16 +277,6 @@ function createContextMenu() {
                 "32": "/icons/icon-encrypt-32.png"
             }
         });
-
-        menus.create({
-            id: MENU_ID_DECRYPT,
-            title: titles.decrypt,
-            contexts: ["editable", "selection"],
-            icons: {
-                "16": "/icons/icon-decrypt-16.png",
-                "32": "/icons/icon-decrypt-32.png"
-            }
-        });
     });
 }
 
@@ -302,19 +289,13 @@ if (browser.runtime && browser.runtime.onInstalled) {
 // Pour le chargement temporaire via about:debugging
 createContextMenu();
 
-// ---- Gestion des clics de menus (ENCRYPT_FIELD / DECRYPT_FIELD) ----
+// ---- Gestion des clics de menus (ENCRYPT_FIELD) ----
 
 function onMenuClick(info, tab) {
     const menus = browser.menus || browser.contextMenus;
     if (info.menuItemId === MENU_ID_ENCRYPT) {
         if (browser.tabs && browser.tabs.sendMessage) {
             browser.tabs.sendMessage(tab.id, { type: "ENCRYPT_FIELD" }).catch(() => {});
-        }
-        return;
-    }
-    if (info.menuItemId === MENU_ID_DECRYPT) {
-        if (browser.tabs && browser.tabs.sendMessage) {
-            browser.tabs.sendMessage(tab.id, { type: "DECRYPT_FIELD" }).catch(() => {});
         }
         return;
     }
@@ -369,7 +350,7 @@ browser.runtime.onMessage.addListener((msg, sender) => {
             return { ok: true };
         }
 
-        // Crypto pour messages (appelé par content-script)
+        // Crypto pour messages (appelé par content-script / viewer / editor)
         if (msg.type === "ENCRYPT_TEXT") {
             const pwd = await getUserPassword();
             if (!pwd) return { success: false, error: "NO_PASSWORD" };

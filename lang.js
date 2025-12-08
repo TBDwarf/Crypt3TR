@@ -18,7 +18,6 @@ const STRINGS = {
         labelPassword: "Encryption Password",
         btnSavePassword: "Save Password",
         btnClearPassword: "Clear",
-        // Petit texte sous le mot de passe
         hintPassword:
         "Password used to encrypt and decrypt your text.\nIt is encrypted and stored only in this browser.",
         labelWhitelist: "Allowed Domains (one per line)",
@@ -36,11 +35,11 @@ const STRINGS = {
 
         // Aide : textes structurés (sans HTML brut)
         helpEncrypt_before: "Type your message. Right-click inside the field and select ",
-        helpEncrypt_bold: "Crypt3TR > Encrypt message",
+        helpEncrypt_bold: "Encrypt Crypt3TR",
         helpEncrypt_after: ".",
 
         helpDecrypt_before: "Messages on allowed sites decrypt automatically if the password is saved. You can also right-click and choose ",
-        helpDecrypt_bold: "Decrypt message",
+        helpDecrypt_bold: "Encrypt Crypt3TR to modify",
         helpDecrypt_after: ".",
 
         // Ligne 1 : "By default, <code>*.*</code> is used: automatic decryption on all websites."
@@ -63,7 +62,7 @@ const STRINGS = {
         aboutGithubLinkText: "https://github.com/TBDwarf/Crypt3TR",
 
         // Footer "About" en deux lignes
-        aboutFooter_line1: "Version 1.1 by TBDwarf",
+        aboutFooter_line1: "Version 1.2 by TBDwarf",  // ← mise à jour
         aboutFooter_line2: "Made with ❤️ in 🇫🇷 to protect your privacy.",
 
         // Messages de feedback
@@ -73,8 +72,7 @@ const STRINGS = {
         errorGeneric: "Error",
 
         // --- Menus contextuels ---
-        encryptMenu: "Encrypt message",
-        decryptMenu: "Decrypt message",
+        encryptMenu: "Encrypt Crypt3TR",
 
         // --- Messages communs (erreur de déchiffrement) ---
         decryptionError: "[[Decryption Error]]"
@@ -112,21 +110,19 @@ const STRINGS = {
         step3Title: "3. Domaines",
 
         // Aide : textes structurés (sans HTML brut)
-        // "Tape ton message. Fais un clic droit dans la zone de texte et choisis <b>Crypt3TR > Chiffrement du message</b>."
         helpEncrypt_before: "Tape ton message. Fais un clic droit dans la zone de texte et choisis ",
-        helpEncrypt_bold: "Crypt3TR > Chiffrement du message",
+        helpEncrypt_bold: "Chiffrement Crypt3TR",
         helpEncrypt_after: ".",
 
-        // "Les messages sont déchiffrés automatiquement [...] Sinon, clic droit puis <b>Déchiffrement du message</b>."
         helpDecrypt_before: "Les messages sont déchiffrés automatiquement sur les sites autorisés si le mot de passe est enregistré. Sinon, clic droit puis ",
-        helpDecrypt_bold: "Déchiffrement du message",
+        helpDecrypt_bold: "Chiffrement Crypt3TR pour l'editer",
         helpDecrypt_after: ".",
 
         // "Par défaut, <code>*.*</code> est utilisé : déchiffrement automatique sur tous les sites."
         helpDomains_line1_beforeCode: "Par défaut, ",
         helpDomains_line1_codeAll: "*.*",
         helpDomains_line1_afterCode: " est utilisé : déchiffrement automatique sur tous les sites.",
-        // "Tu peux restreindre à certains sites [...] (ex : <code>*.gmail.com</code>)."
+        // "Tu peux restreindre à certains sites en mettant un motif par ligne (ex : <code>*.gmail.com</code>)."
         helpDomains_line2_prefix: "Tu peux restreindre à certains sites en mettant un motif par ligne (ex : ",
         helpDomains_line2_codeExample: "*.gmail.com",
         helpDomains_line2_suffix: ").",
@@ -142,7 +138,7 @@ const STRINGS = {
         aboutGithubLinkText: "https://github.com/TBDwarf/Crypt3TR",
 
         // Footer "About" en deux lignes
-        aboutFooter_line1: "Version 1.1 par TBDwarf",
+        aboutFooter_line1: "Version 1.2 par TBDwarf",  // ← mise à jour
         aboutFooter_line2: "Créé avec ❤️ en 🇫🇷 pour protéger votre vie privée.",
 
         // Messages de feedback
@@ -152,8 +148,7 @@ const STRINGS = {
         errorGeneric: "Erreur",
 
         // --- Menus contextuels ---
-        encryptMenu: "Chiffrement du message",
-        decryptMenu: "Déchiffrement du message",
+        encryptMenu: "Chiffrement Crypt3TR",
 
         // --- Messages communs (erreur de déchiffrement) ---
         decryptionError: "[[Erreur de déchiffrement]]"
