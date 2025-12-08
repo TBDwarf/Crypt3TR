@@ -8,7 +8,7 @@
 
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](LICENSE)
 [![Firefox](https://img.shields.io/badge/Firefox-Compatible-orange.svg)](https://www.mozilla.org/firefox/)
-[![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.2.0-green.svg)](CHANGELOG.md)
 [![Crypto](https://img.shields.io/badge/Crypto-AES--256--GCM-red.svg)](#-sécurité)
 
 [Installation](#-installation) • [Utilisation](#-utilisation) • [Exemples](#-exemple-concret--email-gmail) • [Sécurité](#-sécurité) • [FAQ](#-faq)
@@ -50,6 +50,7 @@ Webmail, forum, réseau social, messagerie en ligne, wiki, formulaire… si vous
   - `<input>` (text, email, password, url, tel, search)
   - Éléments `contentEditable`
   - Contenus dans certains **Shadow DOM** (webapps modernes)
+  - Champs présents dans des **iframes** sur les domaines autorisés
 - 💾 **Stockage local sécurisé du mot de passe** :
   - Mot de passe chiffré avec une **clé maîtresse AES‑GCM non extractible**
 - 🌍 **Multilingue** (Français / Anglais)
@@ -293,7 +294,7 @@ L’indicateur dans le popup affiche :
 
 - **Algorithme** : AES‑256‑GCM (Galois/Counter Mode)
 - **Dérivation de clé** : PBKDF2 avec SHA‑256
-- **Itérations PBKDF2** : 100 000
+- **Itérations PBKDF2** : 500 000
 - **Salt** : 128 bits aléatoires (16 octets)
 - **IV (Initialization Vector)** : 96 bits aléatoires (12 octets)
 - **Longueur de clé** : 256 bits
@@ -310,9 +311,8 @@ L’indicateur dans le popup affiche :
 
 ---
 
-### Stockage du mot de passe (v1.1)
+### Stockage du mot de passe
 
-Le mot de passe **n’est plus stocké en clair ni simplement obfusqué**.  
 Il est désormais chiffré de manière forte :
 
 - 🧩 **Clé maîtresse AES‑GCM non extractible**
@@ -333,13 +333,22 @@ Il est désormais chiffré de manière forte :
     - le déchiffre avec la clé maîtresse,
     - dérive une clé de message avec PBKDF2 (salt inclus dans le bloc),
     - chiffre ou déchiffre le texte demandé.
-
+      
 - 🧠 Le **content-script ne voit jamais le mot de passe en clair** :
   - Il envoie uniquement :
     - du texte brut à chiffrer (`ENCRYPT_TEXT`),
     - des blocs encodés Base64 à déchiffrer (`DECRYPT_BLOCK`),
-  - tout le secret (mot de passe, master key) reste dans le contexte du background.
+  - tout le secret (mot de passe, master key) reste dans le **contexte de l’extension** (background / iframe d’extension), jamais dans le DOM de la page.
 
+### Isolation via iframe d’extension
+
+Crypt3TR limite au maximum l’exposition de vos secrets au **DOM de la page web** :
+
+- Le traitement sensible (mot de passe, dérivation de clé, chiffrement/déchiffrement) se fait dans le **contexte de l’extension**, notamment via une **iframe d’extension isolée** (`moz-extension://`).
+- Le **JavaScript de la page** n’a **aucun accès direct** à cette iframe ni aux variables internes de l’extension.
+- Le contenu en clair n’est jamais injecté dans le DOM de la page tant que cela n’est pas explicitement nécessaire (ex. : affichage du message déchiffré dans un champ texte que vous contrôlez).
+
+Cette architecture réduit l’impact d’un site malveillant : il ne peut pas simplement “lire une variable JS” pour récupérer votre mot de passe ou vos clés, car celles‑ci ne vivent jamais dans son contexte d’exécution.
 ---
 
 ### Modèle de menace & limites
@@ -347,20 +356,19 @@ Il est désormais chiffré de manière forte :
 Crypt3TR **protège principalement** contre :
 
 - La lecture directe de vos messages par le **serveur** (webmail, forum, etc.) :
-  - le serveur stocke le bloc chiffré `[[Erreur de déchiffrement]]`.
+  - le serveur stocke le bloc chiffré `[[crypt3tr]]...[[/crypt3tr]]`.
 - La récupération simple de votre **mot de passe** à partir du `browser.storage.local` :
   - le mot de passe est chiffré avec une clé maîtresse non extractible.
+- L’accès direct au mot de passe ou aux clés par le JavaScript de la page :
+  - le code du site tourne dans le **contexte de la page**,
+  - le code Crypt3TR tourne dans le **contexte de l’extension** (iframe / background),
+  - le site ne peut pas introspecter l’iframe d’extension ni lire ses variables internes.
 
 Crypt3TR **ne protège pas** contre :
 
 - Les **keyloggers**, malwares ou un système d’exploitation déjà compromis.
 - Les **autres extensions malveillantes** capables de lire ou modifier le DOM.
-- Un **site web malveillant** que vous auriez ajouté dans la whitelist :
-  - dès qu’un message est déchiffré et inséré dans la page, ce site peut techniquement lire le texte comme n’importe quel autre contenu.
 - Les compromissions locales de votre profil Firefox ou des accès physiques à votre machine.
-- Les besoins avancés de PGP :
-  - signature numérique, non‑répudiation,
-  - gestion fine d’identités, modèles de confiance complexes.
 
 ---
 
@@ -420,6 +428,7 @@ Pour des besoins de **signature, non‑répudiation ou conformité réglementair
 - ✅ `<input type="text">` et variantes (email, url, search, etc.)
 - ✅ Éléments `contentEditable`
 - ✅ Shadow DOM (webcomponents)
+- ✅ Champs texte à l’intérieur d’**iframes** (si le domaine de l’iframe est autorisé)
 
 ---
 
