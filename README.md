@@ -1,5 +1,4 @@
 # 🔐 Crypt3TR
-
 <div align="center">
 
 <img width="150" height="150" alt="Crypt3TR" src="https://github.com/user-attachments/assets/0b1919bb-59a2-4484-8916-2944ad6a855b" />
@@ -41,7 +40,7 @@ Webmail, forum, réseau social, messagerie en ligne, wiki, formulaire… si vous
 
 ### 🌟 Fonctionnalités principales
 
-- 🔒 **Chiffrement AES‑256‑GCM** avec dérivation de clé PBKDF2 (100 000 itérations)
+- 🔒 **Chiffrement AES‑256‑GCM** avec dérivation de clé PBKDF2 (500 000 itérations)
 - ⚡ **Déchiffrement automatique** des messages sur les pages web
 - 🖱️ **Menu contextuel** pour chiffrer/déchiffrer en un clic (clic droit)
 - 🌐 **Whitelist de domaines** pour activer l'extension uniquement où vous le souhaitez
