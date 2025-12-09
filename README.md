@@ -74,8 +74,8 @@ Vous voulez envoyer un message **confidentiel** par email, sur un forum ou une m
 
 **Crypt3TR** rend le chiffrement aussi simple que :
 
-1. 📝 Écrivez votre message
-2. 🖱️ Clic droit → **“Chiffrement du message”**
+1. 🖱️ Clic droit → **“Chiffrement Crypt3TR”**
+2. 📝 Écrivez votre message
 3. ✉️ Envoyez !
 
 Le destinataire qui possède **le même mot de passe** et l’extension verra automatiquement le message déchiffré dans son navigateur (sur les domaines autorisés).
@@ -119,8 +119,8 @@ Alice
 
 #### 3️⃣ Alice chiffre le message
 
-- Clic droit sur la zone de texte du message → **"Chiffrement du message"**
-- Le texte devient instantanément :
+- Clic droit sur la zone de texte du message → **"Chiffrement Crypt3TR"**
+- Elle tape son message, clique sur "OK" et le texte devient instantanément :
 
 ```
 [[crypt3tr]]
@@ -177,7 +177,7 @@ Alice
 
 - Échanges rapides et confidentiels sur des **webmails**, forums, chats, wikis
 - Partage de **codes**, **accès**, **notes sensibles**
-- Des usages “quotidiens” où PGP est trop lourd
+- Des usages “quotidiens” où les autres solutions sont trop lourdes.
 
 👉 **PGP reste préférable pour :**
 
@@ -233,7 +233,7 @@ cd Crypt3TR
 2. Vérifiez que l’extension est **activée**
 3. **Définissez votre mot de passe** de chiffrement
    - Il sera utilisé pour chiffrer/déchiffrer tous vos messages
-   - 🔐 Choisissez un mot de passe fort et unique
+   - 🔐 Choisissez un mot de passe fort et unique (idealement entropie superieur à 80)
    - ⚠️ Partagez-le avec vos correspondants via un **canal sécurisé** (Signal, IRL, etc.)
 4. **Configurez la whitelist** (si besoin)
    - Par défaut : `*.*` (tous les sites)
@@ -265,25 +265,19 @@ L’indicateur dans le popup affiche :
 ### Chiffrer un message
 
 #### Méthode 1 : Menu contextuel (Recommandé)
-1. Rédigez votre message dans un champ de texte (email, forum, etc.)
-2. **Sélectionnez le texte** (optionnel : fonctionne aussi sur le champ actif)
-3. **Clic droit** → **"Chiffrement du message"**
-4. Votre texte est remplacé par `[[crypt3tr]]...[[/crypt3tr]]`
-
-#### Méthode 2 : Champs éditables
-1. Placez votre curseur dans un champ de texte contenant votre message
-2. **Clic droit** (sans sélectionner) → **"Chiffrement du message"**
-3. Le contenu du champ est chiffré
+1. **Clic droit** → **"Chiffrement Crypt3TR"**
+2. Rédigez votre message dans un champ de texte puis "Ok"
+3. Votre texte est remplacé par `[[crypt3tr]]...[[/crypt3tr]]`
 
 ### Déchiffrer un message
 
 #### Déchiffrement automatique (Par défaut)
 - Les messages `[[crypt3tr]]...[[/crypt3tr]]` sont **automatiquement déchiffrés** lors du chargement de la page
-- Fonctionne sur Gmail, forums, réseaux sociaux, etc.
+- Fonctionne sur Webmail, forums, réseaux sociaux, etc.
 
 #### Déchiffrement manuel
 1. **Clic droit** dans un champ contenant un message chiffré
-2. **"Déchiffrement du message"**
+2. **"Déchiffrement du message"** et modification au besoin.
 
 ---
 
