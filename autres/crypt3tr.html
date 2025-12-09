@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crypt3TR - Chiffrement / Déchiffrement</title>
+<style>
+  :root {
+    --bg: #121212;
+    --bg-alt: #1e1e1e;
+    --fg: #e0e0e0;
+    --accent: #4caf50;
+    --accent-soft: #2e7d32;
+    --border: #333;
+    --danger: #ef5350;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    --max-width: 980px;
+    --gap: 12px;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--bg);
+    color: var(--fg);
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    line-height: 1.4;
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin: 0 auto;
+    padding: 28px 16px 40px;
+  }
+
+  h1 {
+    margin: 0 0 14px 0;
+    font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+    text-align: center;
+    color: #fff;
+    line-height: 1.05;
+  }
+
+  .card {
+    background-color: var(--bg-alt);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    box-shadow: 0 6px 24px rgba(0,0,0,0.45);
+  }
+
+  .card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+  }
+
+  .card-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+  }
+
+  label {
+    display: block;
+    font-size: 0.85rem;
+    margin: 10px 0 6px;
+    color: #bdbdbd;
+  }
+
+  input[type="password"],
+  textarea {
+    width: 100%;
+    background-color: #0f0f0f;
+    color: var(--fg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    font-size: 0.95rem;
+    font-family: var(--font-mono);
+    resize: vertical;
+  }
+
+  textarea {
+    min-height: 160px;
+    max-height: 60vh;
+  }
+
+  input[type="password"]:focus,
+  textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(76,175,80,0.08);
+  }
+
+  /* responsive grid for the two text areas */
+  .row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--gap);
+    align-items: start;
+  }
+
+  .col { min-width: 0; }
+
+  .controls {
+    margin-top: 12px;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 8px;
+    border: none;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    font-weight: 600;
+    background-color: var(--accent);
+    color: #fff;
+    transition: background-color 0.15s ease, transform 0.05s ease, box-shadow 0.1s ease;
+    min-height: 44px;
+  }
+
+  .btn:hover { background-color: var(--accent-soft); box-shadow: 0 6px 18px rgba(0,0,0,0.45); }
+  .btn:active { transform: translateY(1px); box-shadow: none; }
+
+  .btn-secondary {
+    background-color: #424242;
+  }
+  .btn-secondary:hover { background-color: #616161; }
+
+  .btn-danger { background-color: var(--danger); }
+  .btn-danger:hover { background-color: #d32f2f; }
+
+  /* buttons: let them expand reasonably on small screens */
+  .controls .btn { flex: 1 1 160px; min-width: 120px; }
+
+  .small { font-size: 0.78rem; color: #9e9e9e; }
+
+  .status {
+    margin-top: 8px;
+    font-size: 0.86rem;
+    min-height: 1.2em;
+    color: #bdbdbd;
+    word-break: break-word;
+  }
+
+  .status.ok { color: #81c784; }
+  .status.err { color: #ef9a9a; }
+
+  .badge {
+    display: inline-block;
+    font-size: 0.78rem;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background-color: #263238;
+    color: #b0bec5;
+  }
+
+  .footer {
+    margin-top: 18px;
+    font-size: 0.80rem;
+    color: #9e9e9e;
+    text-align: center;
+    word-break: break-word;
+  }
+
+  /* mobile tweaks */
+  @media (max-width: 720px) {
+    .card { padding: 12px 12px; }
+    .controls { gap: 8px; }
+    .controls .btn { flex: 1 1 100%; min-width: 0; }
+    .badge { font-size: 0.72rem; padding: 5px 8px; }
+  }
+
+  /* very small */
+  @media (max-width: 420px) {
+    .container { padding: 18px 12px 28px; }
+    textarea { min-height: 140px; }
+    h1 { font-size: 1.15rem; }
+  }
+
+  /* prefers-reduced-motion */
+  @media (prefers-reduced-motion: reduce) {
+    .btn, .btn:hover { transition: none; }
+  }
+</style>
+</head>
+<body>
+<div class="container" role="main">
+  <h1>Crypt3TR<br><span class="small">(chiffrement / déchiffrement hors‑ligne)</span></h1>
+
+  <div class="card" aria-labelledby="params-title">
+    <div class="card-header">
+      <div id="params-title" class="card-title">Paramètres</div>
+      <span class="badge" aria-hidden="true">AES‑GCM · PBKDF2‑SHA256 · 500 000 itérations</span>
+    </div>
+    <label for="passphrase">Mot de passe Crypt3TR</label>
+    <input type="password" id="passphrase" autocomplete="off" placeholder="" aria-label="Mot de passe pour chiffrement/déchiffrement">
+    <div class="small" aria-live="polite">Rien n'est envoyé sur le réseau — tout se fait localement dans le navigateur.</div>
+  </div>
+
+  <div class="card" aria-labelledby="io-title">
+    <div id="io-title" class="card-title" style="margin-bottom:10px">Zones de texte</div>
+
+    <div class="row">
+      <div class="col">
+        <div class="card-title">Texte en clair</div>
+        <label for="plaintext">Texte à chiffrer (sera remplacé par un bloc [[crypt3tr]])</label>
+        <textarea id="plaintext" placeholder="" aria-label="Texte en clair"></textarea>
+        <div class="status" id="status-encrypt" aria-live="polite"></div>
+      </div>
+
+      <div class="col">
+        <div class="card-title">Texte chiffré</div>
+        <label for="ciphertext">Texte chiffré (un ou plusieurs blocs [[crypt3tr]])</label>
+        <textarea id="ciphertext" placeholder="" aria-label="Texte chiffré"></textarea>
+        <div class="status" id="status-decrypt" aria-live="polite"></div>
+      </div>
+    </div>
+
+    <div class="controls" role="toolbar" aria-label="Contrôles">
+      <button class="btn" id="btn-encrypt" title="Chiffrer">Chiffrer →</button>
+      <button class="btn" id="btn-decrypt" title="Déchiffrer">← Déchiffrer</button>
+      <button class="btn btn-secondary" id="btn-swap" title="Échanger les zones">Échanger les zones</button>
+      <button class="btn btn-danger" id="btn-clear" title="Tout effacer">Tout effacer</button>
+    </div>
+  </div>
+
+  <div class="footer">
+    Compatible avec le format <code>[[crypt3tr]]base64(salt||iv||ciphertext+tag)[[/crypt3tr]]</code> — PBKDF2 = 500 000 itérations.
+  </div>
+</div>
+
+<script>
+/*
+  Implémentation Crypt3TR compatible :
+  - PBKDF2-HMAC-SHA256, 500 000 itérations, clé 256 bits
+  - sel de 16 octets aléatoires
+  - IV de 12 octets aléatoires
+  - AES-GCM
+  - format final : [[crypt3tr]]base64(salt||iv||ciphertext+tag)[[/crypt3tr]]
+*/
+
+const PBKDF2_ITERATIONS = 500000;
+const SALT_LEN = 16;
+const IV_LEN = 12;
+const KEY_LEN = 32; // 256 bits
+
+function bufToBase64(buf) {
+  // Uint8Array -> base64 (compatible navigateur)
+  // méthode robuste et compacte
+  const bytes = new Uint8Array(buf);
+  let binary = "";
+  const chunkSize = 0x8000; // éviter gros strings sur de grands buffers
+  for (let i = 0; i < bytes.length; i += chunkSize) {
+    binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunkSize));
+  }
+  return btoa(binary);
+}
+
+function base64ToBuf(b64) {
+  const binary = atob(b64);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; i++) {
+    bytes[i] = binary.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+async function deriveKey(passphrase, salt) {
+  const enc = new TextEncoder();
+  const passBytes = enc.encode(passphrase);
+  const keyMaterial = await crypto.subtle.importKey(
+    "raw",
+    passBytes,
+    { name: "PBKDF2" },
+    false,
+    ["deriveKey"]
+  );
+
+  return crypto.subtle.deriveKey(
+    {
+      name: "PBKDF2",
+      salt: salt,
+      iterations: PBKDF2_ITERATIONS,
+      hash: "SHA-256"
+    },
+    keyMaterial,
+    { name: "AES-GCM", length: KEY_LEN * 8 },
+    false,
+    ["encrypt", "decrypt"]
+  );
+}
+
+async function crypt3trEncrypt(plaintext, passphrase) {
+  if (!plaintext) return plaintext;
+
+  const enc = new TextEncoder();
+  const salt = crypto.getRandomValues(new Uint8Array(SALT_LEN));
+  const iv = crypto.getRandomValues(new Uint8Array(IV_LEN));
+  const key = await deriveKey(passphrase, salt);
+
+  const data = enc.encode(plaintext);
+  const ct = await crypto.subtle.encrypt(
+    { name: "AES-GCM", iv: iv },
+    key,
+    data
+  );
+
+  // concat salt + iv + ciphertext+tag
+  const ctBytes = new Uint8Array(ct);
+  const result = new Uint8Array(SALT_LEN + IV_LEN + ctBytes.byteLength);
+  result.set(salt, 0);
+  result.set(iv, SALT_LEN);
+  result.set(ctBytes, SALT_LEN + IV_LEN);
+
+  const b64 = bufToBase64(result.buffer);
+  return `[[crypt3tr]]${b64}[[/crypt3tr]]`;
+}
+
+async function crypt3trDecryptOneBlock(b64, passphrase) {
+  try {
+    const buf = base64ToBuf(b64.trim());
+    const bytes = new Uint8Array(buf);
+    if (bytes.length < SALT_LEN + IV_LEN + 16) {
+      throw new Error("Données trop courtes");
+    }
+    const salt = bytes.slice(0, SALT_LEN);
+    const iv = bytes.slice(SALT_LEN, SALT_LEN + IV_LEN);
+    const ct = bytes.slice(SALT_LEN + IV_LEN);
+
+    const key = await deriveKey(passphrase, salt);
+    const ptBuf = await crypto.subtle.decrypt(
+      { name: "AES-GCM", iv: iv },
+      key,
+      ct
+    );
+    const dec = new TextDecoder("utf-8");
+    return dec.decode(ptBuf);
+  } catch (e) {
+    console.error("Erreur déchiffrement bloc Crypt3TR :", e);
+    return "[[Erreur de déchiffrement]]";
+  }
+}
+
+async function crypt3trDecryptAll(text, passphrase) {
+  if (!text) return text;
+
+  const regex = /\[\[crypt3tr\]\]([\s\S]*?)\[\[\/crypt3tr\]\]/gi;
+  let result = "";
+  let lastIndex = 0;
+  let m;
+  while ((m = regex.exec(text)) !== null) {
+    // texte avant le bloc
+    result += text.slice(lastIndex, m.index);
+    const innerB64 = m[1];
+    const decrypted = await crypt3trDecryptOneBlock(innerB64, passphrase);
+    result += decrypted;
+    lastIndex = regex.lastIndex;
+  }
+  result += text.slice(lastIndex);
+  return result;
+}
+
+// === UI ===
+
+const passInput = document.getElementById("passphrase");
+const plainArea = document.getElementById("plaintext");
+const cipherArea = document.getElementById("ciphertext");
+const statusEnc = document.getElementById("status-encrypt");
+const statusDec = document.getElementById("status-decrypt");
+const btnEncrypt = document.getElementById("btn-encrypt");
+const btnDecrypt = document.getElementById("btn-decrypt");
+const btnSwap = document.getElementById("btn-swap");
+const btnClear = document.getElementById("btn-clear");
+
+function setStatus(el, msg, ok) {
+  el.textContent = msg || "";
+  el.classList.remove("ok", "err");
+  if (!msg) return;
+  el.classList.add(ok ? "ok" : "err");
+}
+
+btnEncrypt.addEventListener("click", async () => {
+  const pass = passInput.value || "";
+  const plain = plainArea.value || "";
+  if (!pass) {
+    setStatus(statusEnc, "⚠️ Mot de passe requis pour chiffrer.", false);
+    return;
+  }
+  if (!plain) {
+    setStatus(statusEnc, "Rien à chiffrer.", false);
+    return;
+  }
+  setStatus(statusEnc, "Chiffrement en cours... (cela peut prendre quelques secondes avec 500 000 itérations)", true);
+  try {
+    const ct = await crypt3trEncrypt(plain, pass);
+    cipherArea.value = ct;
+    setStatus(statusEnc, "✅ Texte chiffré. Contenu placé dans la zone de droite.", true);
+  } catch (e) {
+    console.error(e);
+    setStatus(statusEnc, "❌ Erreur lors du chiffrement.", false);
+  }
+});
+
+btnDecrypt.addEventListener("click", async () => {
+  const pass = passInput.value || "";
+  const ct = cipherArea.value || "";
+  if (!pass) {
+    setStatus(statusDec, "⚠️ Mot de passe requis pour déchiffrer.", false);
+    return;
+  }
+  if (!ct) {
+    setStatus(statusDec, "Rien à déchiffrer.", false);
+    return;
+  }
+  setStatus(statusDec, "Déchiffrement en cours... (cela peut prendre quelques secondes avec 500 000 itérations)", true);
+  try {
+    const plain = await crypt3trDecryptAll(ct, pass);
+    plainArea.value = plain;
+    setStatus(statusDec, "✅ Déchiffrement terminé. Texte en clair dans la zone de gauche.", true);
+  } catch (e) {
+    console.error(e);
+    setStatus(statusDec, "❌ Erreur lors du déchiffrement.", false);
+  }
+});
+
+btnSwap.addEventListener("click", () => {
+  const tmp = plainArea.value;
+  plainArea.value = cipherArea.value;
+  cipherArea.value = tmp;
+  setStatus(statusEnc, "", false);
+  setStatus(statusDec, "", false);
+});
+
+btnClear.addEventListener("click", () => {
+  plainArea.value = "";
+  cipherArea.value = "";
+  setStatus(statusEnc, "", false);
+  setStatus(statusDec, "", false);
+});
+</script>
+</body>
+</html>
