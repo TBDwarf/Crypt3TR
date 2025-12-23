@@ -185,7 +185,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     let settings = {
         enabled: true,
-        whitelist: ["*.*"],
+        whitelist: [
+            "*.google.com",
+            "*.tuta.com",
+            "*.whatsapp.com",
+            "*.discordapp.com",
+            "*.discord.com",
+            "*.proton.me",
+            "*.protonmail.com",
+            "*.live.com",
+            "*.yahoo.com",
+            "*.telegram.org"
+        ],
         hasPassword: false
     };
 

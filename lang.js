@@ -23,9 +23,17 @@ const STRINGS = {
         labelWhitelist: "Allowed Domains (one per line)",
         btnSaveWhitelist: "Save Domains",
 
-        // Placeholders
+        // Placeholders Popup
         passwordPlaceholder: "••••••••",
         whitelistPlaceholder: "*.*",
+
+        // --- Editor Specific ---
+        editorPlaceholder: "Enter the message to be encrypted...",
+        btnEncrypt: "Encrypt",
+        btnCancel: "Cancel",
+        searchPlaceholder: "Search...",
+        errorNoPassword: "Error: Password not configured.",
+        errorEmpty: "Text is empty.",
 
         // Onglet "How to use"
         titleUsage: "How to use",
@@ -33,7 +41,7 @@ const STRINGS = {
         step2Title: "2. Decrypting",
         step3Title: "3. Domains",
 
-        // Aide : textes structurés (sans HTML brut)
+        // Aide : textes structurés
         helpEncrypt_before: "Type your message. Right-click inside the field and select ",
         helpEncrypt_bold: "Encrypt Crypt3TR",
         helpEncrypt_after: ".",
@@ -42,11 +50,9 @@ const STRINGS = {
         helpDecrypt_bold: "Encrypt Crypt3TR to modify",
         helpDecrypt_after: ".",
 
-        // Ligne 1 : "By default, <code>*.*</code> is used: automatic decryption on all websites."
         helpDomains_line1_beforeCode: "By default, ",
         helpDomains_line1_codeAll: "*.*",
         helpDomains_line1_afterCode: " is used: automatic decryption on all websites.",
-        // Ligne 2 : "You can restrict this to specific sites by listing one pattern per line (e.g. <code>*.gmail.com</code>)."
         helpDomains_line2_prefix: "You can restrict this to specific sites by listing one pattern per line (e.g. ",
         helpDomains_line2_codeExample: "*.gmail.com",
         helpDomains_line2_suffix: ").",
@@ -61,8 +67,8 @@ const STRINGS = {
         aboutOpenSourceLabel: "Open Source project licensed under Apache 2.0",
         aboutGithubLinkText: "https://github.com/TBDwarf/Crypt3TR",
 
-        // Footer "About" en deux lignes
-        aboutFooter_line1: "Version 1.2 by TBDwarf",  // ← mise à jour
+        // Footer "About"
+        aboutFooter_line1: "Version 1.3 by TBDwarf",
         aboutFooter_line2: "Made with ❤️ in 🇫🇷 to protect your privacy.",
 
         // Messages de feedback
@@ -74,7 +80,7 @@ const STRINGS = {
         // --- Menus contextuels ---
         encryptMenu: "Encrypt Crypt3TR",
 
-        // --- Messages communs (erreur de déchiffrement) ---
+        // --- Messages communs ---
         decryptionError: "[[Decryption Error]]"
     },
 
@@ -99,9 +105,17 @@ const STRINGS = {
         labelWhitelist: "Domaines autorisés (un par ligne)",
         btnSaveWhitelist: "Sauvegarder",
 
-        // Placeholders
+        // Placeholders Popup
         passwordPlaceholder: "••••••••",
         whitelistPlaceholder: "*.*",
+
+        // --- Editor Specific ---
+        editorPlaceholder: "Saisissez le message à chiffrer...",
+        btnEncrypt: "Chiffrer",
+        btnCancel: "Annuler",
+        searchPlaceholder: "Rechercher...",
+        errorNoPassword: "Erreur : Mot de passe non configuré.",
+        errorEmpty: "Le texte est vide.",
 
         // Onglet "Aide"
         titleUsage: "Mode d'emploi",
@@ -109,20 +123,18 @@ const STRINGS = {
         step2Title: "2. Déchiffrement",
         step3Title: "3. Domaines",
 
-        // Aide : textes structurés (sans HTML brut)
+        // Aide : textes structurés
         helpEncrypt_before: "Tape ton message. Fais un clic droit dans la zone de texte et choisis ",
         helpEncrypt_bold: "Chiffrement Crypt3TR",
         helpEncrypt_after: ".",
 
         helpDecrypt_before: "Les messages sont déchiffrés automatiquement sur les sites autorisés si le mot de passe est enregistré. Sinon, clic droit puis ",
-        helpDecrypt_bold: "Chiffrement Crypt3TR pour l'editer",
+        helpDecrypt_bold: "Chiffrement Crypt3TR pour l'éditer",
         helpDecrypt_after: ".",
 
-        // "Par défaut, <code>*.*</code> est utilisé : déchiffrement automatique sur tous les sites."
         helpDomains_line1_beforeCode: "Par défaut, ",
         helpDomains_line1_codeAll: "*.*",
         helpDomains_line1_afterCode: " est utilisé : déchiffrement automatique sur tous les sites.",
-        // "Tu peux restreindre à certains sites en mettant un motif par ligne (ex : <code>*.gmail.com</code>)."
         helpDomains_line2_prefix: "Tu peux restreindre à certains sites en mettant un motif par ligne (ex : ",
         helpDomains_line2_codeExample: "*.gmail.com",
         helpDomains_line2_suffix: ").",
@@ -137,8 +149,8 @@ const STRINGS = {
         aboutOpenSourceLabel: "Projet Open Source sous licence Apache 2.0 ",
         aboutGithubLinkText: "https://github.com/TBDwarf/Crypt3TR",
 
-        // Footer "About" en deux lignes
-        aboutFooter_line1: "Version 1.2 par TBDwarf",  // ← mise à jour
+        // Footer "About"
+        aboutFooter_line1: "Version 1.3 par TBDwarf",
         aboutFooter_line2: "Créé avec ❤️ en 🇫🇷 pour protéger votre vie privée.",
 
         // Messages de feedback
@@ -150,7 +162,7 @@ const STRINGS = {
         // --- Menus contextuels ---
         encryptMenu: "Chiffrement Crypt3TR",
 
-        // --- Messages communs (erreur de déchiffrement) ---
+        // --- Messages communs ---
         decryptionError: "[[Erreur de déchiffrement]]"
     }
 };

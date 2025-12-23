@@ -121,7 +121,18 @@ async function loadSettings() {
     const raw = res[STORAGE_KEY] || {};
     return {
         enabled: raw.enabled !== undefined ? raw.enabled : true,
-        whitelist: raw.whitelist || ["*.*"],
+        whitelist: raw.whitelist || [
+            "*.google.com",
+            "*.tuta.com",
+            "*.whatsapp.com",
+            "*.discordapp.com",
+            "*.discord.com",
+            "*.proton.me",
+            "*.protonmail.com",
+            "*.live.com",
+            "*.yahoo.com",
+            "*.telegram.org"
+        ],
         encryptedPassword: raw.encryptedPassword || "" // base64(iv + ciphertext) chiffré avec masterKey
     };
 }
@@ -334,7 +345,18 @@ browser.runtime.onMessage.addListener((msg, sender) => {
             const settings = await loadSettings();
             settings.whitelist = Array.isArray(msg.whitelist) && msg.whitelist.length > 0
             ? msg.whitelist
-            : ["*.*"];
+            : [
+                "*.google.com",
+                "*.tuta.com",
+                "*.whatsapp.com",
+                "*.discordapp.com",
+                "*.discord.com",
+                "*.proton.me",
+                "*.protonmail.com",
+                "*.live.com",
+                "*.yahoo.com",
+                "*.telegram.org"
+            ];
             await saveSettings(settings);
             return { ok: true };
         }

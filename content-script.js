@@ -59,7 +59,18 @@ async function loadSettingsRemote() {
         const res = await browser.runtime.sendMessage({ type: "GET_SETTINGS" });
         cachedSettings = {
             enabled: !!res.enabled,
-            whitelist: res.whitelist || ["*.*"],
+            whitelist: res.whitelist || [
+                "*.google.com",
+                "*.tuta.com",
+                "*.whatsapp.com",
+                "*.discordapp.com",
+                "*.discord.com",
+                "*.proton.me",
+                "*.protonmail.com",
+                "*.live.com",
+                "*.yahoo.com",
+                "*.telegram.org"
+            ],
             hasPassword: !!res.hasPassword
         };
         return cachedSettings;
@@ -408,11 +419,9 @@ function openSecureEditorForActiveField(initialPlainText = "") {
 
     const params = new URLSearchParams();
     params.set("id", id);
-    // ON NE PASSE PLUS LE TEXTE DANS L'URL ICI
 
     const iframe = document.createElement("iframe");
 
-    // On envoie le texte sécurisé une fois l'iframe chargée
     iframe.onload = () => {
         iframe.contentWindow.postMessage({
             type: "CRYPT3TR_EDITOR_INIT",
@@ -424,13 +433,17 @@ function openSecureEditorForActiveField(initialPlainText = "") {
     iframe.style.left = "50%";
     iframe.style.top = "50%";
     iframe.style.transform = "translate(-50%, -50%)";
-    iframe.style.width = "420px";
-    iframe.style.height = "260px";
-    iframe.style.border = "1px solid rgba(0,0,0,0.4)";
-    iframe.style.borderRadius = "8px";
-    iframe.style.boxShadow = "0 10px 30px rgba(0,0,0,0.4)";
-    iframe.style.zIndex = "2147483647";
+
+    // TAILLE OPTIMISÉE POUR ÉVITER LE VIDE EN BAS
+    iframe.style.width = "450px";
+    iframe.style.height = "350px";
+
+    iframe.style.border = "none";
     iframe.style.background = "transparent";
+    iframe.style.overflow = "hidden";
+    iframe.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
+    iframe.style.zIndex = "2147483647";
+    iframe.style.borderRadius = "12px"; // Important pour la propreté
 
     document.documentElement.appendChild(iframe);
     crypt3trEditorIframes.set(id, iframe);
@@ -482,7 +495,12 @@ window.addEventListener("message", (event) => {
     if (!data || typeof data !== "object") return;
     if (!data.type) return;
 
-    // Ne traiter que les messages venant de nos iframes (viewer/editor)
+    // 1) Refuser tout message qui ne vient pas d'une origine moz-extension://
+    if (!event.origin || !event.origin.startsWith("moz-extension://")) {
+        return;
+    }
+
+    // 2) Ne traiter que les messages venant de nos iframes (viewer/editor)
     if (!isTrustedIframeWindow(event.source)) {
         return;
     }
@@ -597,7 +615,7 @@ window.addEventListener("message", (event) => {
                         if (document.queryCommandSupported &&
                             document.queryCommandSupported("insertText")) {
                             usedExec = document.execCommand("insertText", false, ciphertext);
-                        }
+                            }
                     } catch (e) {
                         usedExec = false;
                     }

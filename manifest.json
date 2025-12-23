@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Crypt3TR",
-  "version": "1.2",
+  "version": "1.3",
   "description": "Text encryption extension for the web: encrypt your messages on any site with a single password, directly in your browser, with no servers and no data collection.",
   "icons": {
     "32": "/icons/icon-32.png",
@@ -45,6 +45,7 @@
     "viewer.html",
     "viewer.js",
     "editor.html",
+    "emoji-data.js",
     "editor.js"
   ],
   "browser_specific_settings": {
