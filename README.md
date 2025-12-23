@@ -98,7 +98,7 @@ Ils partagent un mot de passe commun : `MonMotDePasseSecret2024`
 - Entre le mot de passe : `MonMotDePasseSecret2024`
 - Ajoute `*.google.com` à la whitelist (ou garde la configuration par défaut `*.*`)
 
-<img width="740" height="1115" alt="menu" src="https://github.com/user-attachments/assets/3557b77b-9649-44d6-8ba7-3c0479ca76e2" />
+<img width="185" height="279" alt="menu" src="https://github.com/user-attachments/assets/3557b77b-9649-44d6-8ba7-3c0479ca76e2" />
 
 #### 2️⃣ Alice rédige son email
 
@@ -130,7 +130,7 @@ Alice
 [[/crypt3tr]]
 ```
 
-<img width="851" height="677" alt="editeur" src="https://github.com/user-attachments/assets/422deaff-ae0c-42be-b9ef-4c6965b6d37d" />
+<img width="213" height="169" alt="editeur" src="https://github.com/user-attachments/assets/422deaff-ae0c-42be-b9ef-4c6965b6d37d" />
 
 #### 4️⃣ Alice envoie l'email
 
