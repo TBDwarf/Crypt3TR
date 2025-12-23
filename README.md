@@ -98,6 +98,8 @@ Ils partagent un mot de passe commun : `MonMotDePasseSecret2024`
 - Entre le mot de passe : `MonMotDePasseSecret2024`
 - Ajoute `*.google.com` à la whitelist (ou garde la configuration par défaut `*.*`)
 
+<img width="740" height="1115" alt="menu" src="https://github.com/user-attachments/assets/3557b77b-9649-44d6-8ba7-3c0479ca76e2" />
+
 #### 2️⃣ Alice rédige son email
 
 ```
@@ -127,6 +129,8 @@ Alice
 5SvIzGYc2z7sg1Q44jBLC9D8BDTgNaEbxR45RNOMUUrm2KV43x8TR6ozNpUC1u5qqG7mzDVr7Fmu8nQ8m+xmwUmYwn2r5uWeuVKeEtcU7MKQMUCSb+Ds3mghIKe1BwfkfiEreNHjT6nkfBsBvzRGe9kwGtfNSbolMQF7eduVQItbLJ9UtLoAiEUMtEC5pAJT232UqxM9ZWAlp0mN86hxJywsBpMCUlnNXaSWQEwMIebZSr8VwLWhpfiflQkRhQmJRpa+gLVx2dgBcTMTIhHkeBzgR8paStwfEyGIbWtDqXBtNnw85m8qv9fYsgJmS1KRU+Jhxq0PNWhzAqjCJqKpW0oh8gElApu81vr/VeCdSJwiGXVDdkcDK0jKtQcx/Jx3UhFx7V7BybvCjdzwXOTc0L8aDQPQ4v+yL6Fbwar7RjRQ
 [[/crypt3tr]]
 ```
+
+<img width="851" height="677" alt="editeur" src="https://github.com/user-attachments/assets/422deaff-ae0c-42be-b9ef-4c6965b6d37d" />
 
 #### 4️⃣ Alice envoie l'email
 
