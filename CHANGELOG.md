@@ -7,6 +7,83 @@ et ce projet adhère au [Semantic Versioning](https://semver.org/lang/fr/).
 
 ---
 
+## [1.3.0] - 2025-12-23
+
+### ✨ Ajouté
+
+#### Nouvel éditeur sécurisé
+
+- 🎨 Remplacement de l’ancien éditeur minimal (simple fenêtre texte + Annuler / Envoyer) par un **éditeur dédié** :
+  - Interface modernisée (thème clair/sombre, bords arrondis, meilleure lisibilité).
+  - Mise en page optimisée pour une utilisation fréquente dans les chats / webmails.
+- 😀 **Sélecteur d’emojis intégré** :
+  - Bouton emoji dans la barre d’outils de l’éditeur.
+  - Panneau d’emojis avec **recherche** par mots-clés.
+  - Insertion directe des emojis dans le texte avant chiffrement, sans passer par la page.
+
+---
+
+### 🔧 Modifié
+
+#### Whitelist de domaines par défaut
+
+- 🌐 Changement de la configuration **par défaut** de la whitelist :
+  - Ancien comportement : `*.*` (tous les sites) autorisés par défaut.
+  - Nouveau comportement : par défaut, Crypt3TR ne fonctionne que sur une liste restreinte de services de messagerie / mail privés :
+    - `*.google.com`
+    - `*.tuta.com`
+    - `*.whatsapp.com`
+    - `*.discordapp.com`
+    - `*.discord.com`
+    - `*.proton.me`
+    - `*.protonmail.com`
+    - `outlook.live.com`
+    - `mail.yahoo.com`
+    - `web.telegram.org`
+  - L’utilisateur peut toujours :
+    - Ajouter / supprimer des motifs ;
+    - Étendre à des domaines supplémentaires ;
+    - Mettre `*.*` s’il accepte d’ouvrir l’extension à tout le web.
+- 🧭 Mise à jour des valeurs par défaut dans :
+  - `background.js` (chargement des paramètres, fallback de whitelist).
+  - `content-script.js` (cache local des paramètres).
+  - `popup.js` (état initial affiché si aucune configuration n’est encore stockée).
+
+#### Texte et documentation intégrée
+
+- 📝 Ajustement des textes d’aide liés aux domaines (`lang.js`) :
+  - Les messages ne disent plus que `*.*` est la valeur par défaut.
+  - `*.*` est présenté comme **option avancée** pour autoriser tous les sites.
+  - Explication plus claire du fonctionnement par motifs (`*.example.com`, etc.).
+- 🌍 L’éditeur bénéficie aussi de l’I18N existante :
+  - Placeholder, boutons, messages d’erreur adaptés en FR/EN.
+  - Libellés de recherche d’emojis traduits.
+
+---
+
+### 🐛 Corrigé
+
+- 🧹 Nettoyage de comportements résiduels où le texte en clair pouvait transiter inutilement par la page avant chiffrement.
+
+---
+
+### 🔒 Sécurité
+
+- 🛡️ Durcissement des échanges internes via `postMessage` entre :
+  - le **content-script** injecté dans la page ;
+  - les **iframes d’extension** (viewer et éditeur).
+- 🔍 Vérifications supplémentaires ajoutées côté `content-script` :
+  - Contrôle strict de `event.origin` : seuls les messages provenant d’une origine `moz-extension://` sont traités.
+  - Vérification de la **fenêtre source** (`event.source`) contre les iframes internes connues (`crypt3trViewers`, `crypt3trEditorIframes`).
+- 🔐 Renforcement global du modèle :
+  - Le texte en clair reste confiné dans le contexte extension (viewer/editor) ;  
+    le site ne voit que :
+    - le **texte chiffré** inséré dans les champs ;
+    - ou le rendu déchiffré dans des iframes `moz-extension://` inaccessibles à son JavaScript.
+  - Réduction de la surface d’attaque en limitant par défaut l’extension à quelques services de messagerie ciblés plutôt qu’à tout le web.
+
+---
+
 ## [1.2.0] - 2025-12-08
 
 ### ✨ Ajouté
